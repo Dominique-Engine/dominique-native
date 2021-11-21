@@ -28,6 +28,8 @@ set (CMAKE_CXX_STANDARD 17)
 
 add_executable(Dominique ${GUI_TYPE}
               "src/main.cpp"
+              "src/DEngine/core.cpp"
+              "src/DEngine/spdlog_helper.cpp"
               )
 
 include_directories("3rdParty")
@@ -35,19 +37,20 @@ include_directories("3rdParty")
 
 set(GLAD_INSTALL ON)
 append_var_to_cmake_args(GLAD_INSTALL)
-#collect_src(    "https://github.com/skaslev/gl3w" "" Dominique)
-collect( "https://github.com/Dav1dde/glad" "v0.1.34" Dominique )
-collect_and_find( SDL2 "https://github.com/libsdl-org/SDL" "release-2.0.14" Dominique )
-collect_and_find( CURL "https://github.com/curl/curl" "curl-7_79_1" Dominique )
+collect( "https://github.com/Dav1dde/glad"             "v0.1.34"           Dominique )
+
+collect_and_find( spdlog "https://github.com/gabime/spdlog"            "v1.8.5"            Dominique )
+collect_and_find( SDL2 "https://github.com/libsdl-org/SDL"      "release-2.0.14"    Dominique )
+#collect_and_find( CURL "https://github.com/curl/curl"           "curl-7_79_1"       Dominique )
 
 
 
-if(${SDL2_FOUND} AND ${CURL_FOUND})
-#if(${SDL2_FOUND})
+#if(${SDL2_FOUND} AND ${CURL_FOUND})
+if(${SDL2_FOUND})
     if (WIN32)       #Windows settings
-        target_link_libraries (Dominique PRIVATE SDL2::SDL2main SDL2::SDL2-static opengl32 shell32 )#for sdl_opengl3 by find package
+        target_link_libraries (Dominique PRIVATE SDL2::SDL2main SDL2::SDL2 glad spdlog::spdlog)#for sdl_opengl3 by find package
     elseif(UNIX AND NOT APPLE)#for linux only
-        target_link_libraries (Dominique PRIVATE GL SDL2 ${CMAKE_DL_LIBS} )#for sdl_opengl3 by find package
+        target_link_libraries (Dominique PRIVATE SDL2 ${CMAKE_DL_LIBS} glad spdlog::spdlog)#for sdl_opengl3 by find package
     endif ()
 endif()
 

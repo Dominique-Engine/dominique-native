@@ -14,49 +14,74 @@
 #include <sstream>
 
 #include <SDL2/SDL.h>
-//#include <SDL_opengl.h>
 #include <glad/glad.h>
+
+
+#include "DEngine/spdlog_helper.h"
+#include "DEngine/core.h"
 
 
 using namespace std;
 
 
-SDL_Window* g_pWindow = 0;
-SDL_Renderer* g_pRenderer = 0;
-
-
 int main(void)
 {
-    // initialize SDL
-    if(SDL_Init(SDL_INIT_EVERYTHING) >= 0)
+    auto logger = getMultiSinkLogger();
+
+    auto App = DEngine::Core();
+    App.Init("DEngine App",800,600);
+    auto windowHandler = App.getSDLwinHandler();
+
+    GLuint VertexArrayID;
+    glGenVertexArrays(1, &VertexArrayID);
+    glBindVertexArray(VertexArrayID);
+
+    // An array of 3 vectors which represents 3 vertices
+    static const GLfloat g_vertex_buffer_data[] = 
     {
-        // if succeeded create our window
-        g_pWindow = SDL_CreateWindow("Hello SDL",
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        640, 480,
-        SDL_WINDOW_SHOWN);
-        // if the window creation succeeded create our renderer
-        if(g_pWindow != 0)
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        0.0f,  1.0f, 0.0f,
+    };
+
+
+    // This will identify our vertex buffer
+    GLuint vertexbuffer;
+    // Generate 1 buffer, put the resulting identifier in vertexbuffer
+    glGenBuffers(1, &vertexbuffer);
+    // The following commands will talk about our 'vertexbuffer' buffer
+    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+    // Give our vertices to OpenGL.
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+    // Tell open GL to use this buffer
+    glEnableVertexAttribArray(0);
+    //glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);//not sure if needed twice
+    glVertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+
+    SDL_Event event;
+    bool quit = false;
+    bool green = false; // Toggle background clearing color between green and blue
+    while (!quit) 
+    {
+        //green ? glClearColor(0.0,0.5,0.1,1.0) : glClearColor(0.0,0.,0.5,1.0);        
+        green ^= true;            
+
+        
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glDrawArrays(GL_TRIANGLES, 0, 3); // 3: Three vertices. Should draw the triangle?
+        SDL_GL_SwapWindow(windowHandler);
+
+        while (SDL_PollEvent(&event)) 
         {
-        g_pRenderer = SDL_CreateRenderer(g_pWindow, -1, 0);
+            if (event.type == SDL_QUIT) 
+            {
+                quit = true;
+            }
         }
     }
-    else
-    {
-        return 1; // sdl could not initialize
-    }
-    // everything succeeded lets draw the window
-    // set to black // This function expects Red, Green, Blue and
-    // Alpha as color values
-    SDL_SetRenderDrawColor(g_pRenderer, 0, 0, 0, 255);
-    // clear the window to black
-    SDL_RenderClear(g_pRenderer);
-    // show the window
-    SDL_RenderPresent(g_pRenderer);
-    // set a delay before quitting
-    SDL_Delay(5000);
-    // clean up SDL
-    SDL_Quit();
     
     return 0;
 }
