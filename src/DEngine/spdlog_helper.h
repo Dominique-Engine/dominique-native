@@ -1,4 +1,6 @@
-#pragma once
+#if !defined(DE_SPDLOG_HELPER)
+#define DE_SPDLOG_HELPER
+
 
 //actually, i do not know if this is working as expected, i want to be something like a singleton but i am using
 //static things for this, and this is used in many diferent places, like inside lambdas, and not sure about scopes, or anything
@@ -18,3 +20,7 @@
  * @return spdlog::logger& reference to singleton Multi Sink Logger
  */
 spdlog::logger& getMultiSinkLogger();
+
+
+
+#endif // DE_SPDLOG_HELPER

@@ -29,6 +29,8 @@ set (CMAKE_CXX_STANDARD 17)
 add_executable(Dominique ${GUI_TYPE}
               "src/main.cpp"
               "src/DEngine/core.cpp"
+              "src/DEngine/coreGL.cpp"
+              "src/DEngine/coreDX11.cpp"
               "src/DEngine/spdlog_helper.cpp"
               )
 
@@ -48,7 +50,7 @@ collect_and_find( SDL2 "https://github.com/libsdl-org/SDL"      "release-2.0.14"
 #if(${SDL2_FOUND} AND ${CURL_FOUND})
 if(${SDL2_FOUND})
     if (WIN32)       #Windows settings
-        target_link_libraries (Dominique PRIVATE SDL2::SDL2main SDL2::SDL2 glad spdlog::spdlog)#for sdl_opengl3 by find package
+        target_link_libraries (Dominique PRIVATE SDL2::SDL2main SDL2::SDL2-static glad spdlog::spdlog d3d11 dxgi d3dcompiler shell32)#for sdl_opengl3 by find package
     elseif(UNIX AND NOT APPLE)#for linux only
         target_link_libraries (Dominique PRIVATE SDL2 ${CMAKE_DL_LIBS} glad spdlog::spdlog)#for sdl_opengl3 by find package
     endif ()

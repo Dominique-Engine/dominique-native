@@ -19,6 +19,7 @@
 
 #include "DEngine/spdlog_helper.h"
 #include "DEngine/core.h"
+#include "DEngine/sdl_helpers.h"
 
 
 using namespace std;
@@ -28,10 +29,11 @@ int main(void)
 {
     auto logger = getMultiSinkLogger();
 
-    auto App = DEngine::Core();
+    //auto App = DEngine::Core(DEngine::RendererType::OpenGl);
+    auto App = DEngine::Core(DEngine::RendererType::DirectX11);
     App.Init("DEngine App",800,600);
-    auto windowHandler = App.getSDLwinHandler();
 
+    /*
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
@@ -58,7 +60,9 @@ int main(void)
     glEnableVertexAttribArray(0);
     //glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);//not sure if needed twice
     glVertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    */
 
+    logSDL2renderersInfo();
 
     SDL_Event event;
     bool quit = false;
@@ -69,11 +73,12 @@ int main(void)
         green ^= true;            
 
         
-        glClear(GL_COLOR_BUFFER_BIT);
+        //glClear(GL_COLOR_BUFFER_BIT);
+        //glDrawArrays(GL_TRIANGLES, 0, 3); // 3: Three vertices. Should draw the triangle?
+        
 
-        glDrawArrays(GL_TRIANGLES, 0, 3); // 3: Three vertices. Should draw the triangle?
-        SDL_GL_SwapWindow(windowHandler);
-
+        App.Render();
+        
         while (SDL_PollEvent(&event)) 
         {
             if (event.type == SDL_QUIT) 
