@@ -5,22 +5,16 @@
 #include <SDL2/SDL.h>
 #include "spdlog_helper.h"
 
-void logSDL2renderersInfo()
+#include <stb/stb_image.h>
+namespace DEngine
 {
-    auto logger = getMultiSinkLogger();
 
-    auto a = SDL_GetNumRenderDrivers();
-    logger.info("Number of SDL devices: {}, with info:", a );
-    {
-        SDL_RendererInfo temp;
-        for (short i = 0; i < a; i++)
-        {
-            SDL_GetRenderDriverInfo(i, &temp );
-            logger.info("name: {}, max texture height: {}, max texture width: {}, num texture formats: {}", 
-                temp.name, temp.max_texture_height, temp.max_texture_width, temp.num_texture_formats );
-        }
-    }
+void logSDL2renderersInfo();
+
+// From https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom
+SDL_Surface* loadImgFromFile2SDLSurface( const char* filename, const int req_format = STBI_rgb_alpha);
+
+
 }
-
 
 #endif // DE_SDL_HELPER

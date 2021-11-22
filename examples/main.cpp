@@ -2,7 +2,7 @@
 # define APP_VERSION "0.0.0"
 #endif
 //#define SDL_MAIN_HANDLED//not needed in msvc,need to enable this from cmake, now is needed in msvc, wtf
-//#define RC_INVOKED//this should't be done
+//#define RC_INVOKED//this shouldn't be done
 
 #ifndef APP_VERSION
 # define APP_VERSION "0.0.0"
@@ -62,7 +62,7 @@ int main(void)
     glVertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, 0, (void*)0);
     */
 
-    logSDL2renderersInfo();
+    DEngine::logSDL2renderersInfo();
 
     SDL_Event event;
     bool quit = false;

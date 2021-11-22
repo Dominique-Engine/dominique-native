@@ -64,10 +64,10 @@ int DEngine::Core::InitDX11(const char* title, const int &width, const int &heig
     
     //Turn this into some useful information
     logger.info("DirectX11 loaded");
-    logger.info("Vendor:   {}, Renderer: {}, Version:  {}", tempDescription.VendorId ,tempDescription.DeviceId,dxContext.pd3dDevice->GetFeatureLevel() );
     std::wstring_view ws(tempDescription.Description);
     std::string s(ws.begin(), ws.end());
-    logger.info("Description:   {}", s );
+    logger.info("Vendor:   {}, Renderer: {}, Version:  {}", tempDescription.VendorId ,s,dxContext.pd3dDevice->GetFeatureLevel() );
+
 
     return 0;
 } 

@@ -1,1 +1,3 @@
 - Improve DEngine for use with multiple windows out of the box
+- Add required extra files copy to Collector as an utility
+- Make lib available shared, and fix the shared compilation in msvc with the file common.h(need fixes)
