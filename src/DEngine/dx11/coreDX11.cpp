@@ -4,11 +4,13 @@
 #include <SDL2/SDL_syswm.h>
 #include <d3d11.h>
 
-#include "core.h"
-#include "spdlog_helper.h"
-#include "dx11/dx11_helpers.h"
+#include <DEngine/spdlog_helper.h>
+#include "dx11_helpers.h"
+#include "coreDX11.h"
 
-int DEngine::Core::InitDX11(const char* title, const int &width, const int &height, const int &flags )
+DEDirectX11Context _dxContext;
+
+int DEngine::Core::InitDX11(DE &engine)
 {
     auto logger = getMultiSinkLogger();
 
@@ -23,15 +25,16 @@ int DEngine::Core::InitDX11(const char* title, const int &width, const int &heig
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
         // if succeeded create our window
-        windowHandler = SDL_CreateWindow(
-            title,
+        engine.windowHandler = SDL_CreateWindow(
+            engine.config.title,
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-            width, height,
+            engine.config.width,
+            engine.config.height,
             SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
         );
 
 
-        if (windowHandler == NULL)
+        if (engine.windowHandler == NULL)
         {
             logger.error("Couldn't set video mode: {}", SDL_GetError());
             return 1;
@@ -48,14 +51,14 @@ int DEngine::Core::InitDX11(const char* title, const int &width, const int &heig
     // if the window creation succeeded create our renderer
     SDL_SysWMinfo wmInfo;
     SDL_VERSION(&wmInfo.version);
-    SDL_GetWindowWMInfo(windowHandler, &wmInfo);
+    SDL_GetWindowWMInfo(engine.windowHandler, &wmInfo);
     HWND hwnd = (HWND)wmInfo.info.win.window;
 
     // Initialize Direct3D
-    if (!CreateDeviceD3D(hwnd, dxContext, false))
+    if (!CreateDeviceD3D(hwnd, _dxContext, false))
     {
         logger.error("Failed to initialize DirectX");
-        CleanupDeviceD3D(dxContext);
+        CleanupDeviceD3D(_dxContext);
         return 1;
     }
 
@@ -66,28 +69,28 @@ int DEngine::Core::InitDX11(const char* title, const int &width, const int &heig
     logger.info("DirectX11 loaded");
     std::wstring_view ws(tempDescription.Description);
     std::string s(ws.begin(), ws.end());
-    logger.info("Vendor:   {}, Renderer: {}, Version:  {}", tempDescription.VendorId ,s,dxContext.pd3dDevice->GetFeatureLevel() );
+    logger.info("Vendor:   {}, Renderer: {}, Version:  {}", tempDescription.VendorId ,s,_dxContext.pd3dDevice->GetFeatureLevel() );
 
 
     return 0;
 } 
 
 
-void DEngine::Core::RenderDX11()
+void DEngine::Core::RenderDX11(DE &engine)
 {
-    dxContext.pd3dDeviceContext->OMSetRenderTargets(1, &dxContext.mainRenderTargetView, NULL);
-    dxContext.pd3dDeviceContext->ClearRenderTargetView(dxContext.mainRenderTargetView, config.clearColor);
-    dxContext.pSwapChain->Present(1, 0); // Present with vsync
+    _dxContext.pd3dDeviceContext->OMSetRenderTargets(1, &_dxContext.mainRenderTargetView, NULL);
+    _dxContext.pd3dDeviceContext->ClearRenderTargetView(_dxContext.mainRenderTargetView, engine.config.clearColor);
+    _dxContext.pSwapChain->Present(1, 0); // Present with vsync
 }
 
-int DEngine::Core::CleanDX11()
+int DEngine::Core::CleanDX11(DE &engine)
 {
     auto logger = getMultiSinkLogger();
 
     logger.info("Cleaning engine");
 
-    CleanupDeviceD3D(dxContext);
-    SDL_DestroyWindow(windowHandler);
+    CleanupDeviceD3D(_dxContext);
+    SDL_DestroyWindow(engine.windowHandler);
     SDL_Quit();
 
     return 0;

@@ -26,7 +26,7 @@ set (ExamplesRequiredExtras
 )
 
 get_target_property(EXAMPLES_BINARY_EXECUTABLE_OUTPUT DEexample RUNTIME_OUTPUT_DIRECTORY)
-message("asda " ${EXAMPLES_BINARY_EXECUTABLE_OUTPUT})
+
 foreach (_file ${ExamplesRequiredExtras})
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         list( APPEND extraFiles COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${PROJECT_SOURCE_DIR}/${_file}" "${EXAMPLES_BINARY_EXECUTABLE_OUTPUT}/$<CONFIG>/")

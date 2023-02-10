@@ -1,7 +1,10 @@
 # fritters-Frontend
 Basic frontend for testing and using fritters
 
+## Requirements
 
+- Python: for GLAD generation
+- Vulkan SDK: to use vulkan during rendering, if not present need to be disabled in cmake
 
 ![Alt text](./images/1.png "a title")
 

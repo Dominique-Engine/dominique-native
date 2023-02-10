@@ -7,7 +7,7 @@
 
 
 
-int DEngine::Core::InitGL(const char* title, const int &width, const int &height, const int &flags )
+int DEngine::Core::InitVK(const char* title, const int &width, const int &height, const int &flags )
 {
     auto logger = getMultiSinkLogger();
 
@@ -26,7 +26,7 @@ int DEngine::Core::InitGL(const char* title, const int &width, const int &height
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
         // if succeeded create our window
-        windowHandler = SDL_CreateWindow(
+        _windowHandler = SDL_CreateWindow(
             title,
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             width, height,
@@ -34,14 +34,14 @@ int DEngine::Core::InitGL(const char* title, const int &width, const int &height
         );
 
 
-        if (windowHandler == NULL)
+        if (_windowHandler == NULL)
         {
             logger.error("Couldn't set video mode: {}", SDL_GetError());
             return 1;
         }
 
         // if the window creation succeeded create our renderer
-        glContext = SDL_GL_CreateContext(windowHandler);
+        _glContext = SDL_GL_CreateContext(_windowHandler);
 
     }
     else
@@ -68,7 +68,7 @@ int DEngine::Core::InitGL(const char* title, const int &width, const int &height
     glDisable(GL_CULL_FACE);
 
     int w,h;
-    SDL_GetWindowSize(windowHandler, &w, &h);
+    SDL_GetWindowSize(_windowHandler, &w, &h);
     glViewport(0, 0, w, h);
     
     //base clear color
@@ -78,20 +78,20 @@ int DEngine::Core::InitGL(const char* title, const int &width, const int &height
 } 
 
 
-void DEngine::Core::RenderGL()
+void DEngine::Core::RenderVK()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    SDL_GL_SwapWindow(windowHandler);
+    SDL_GL_SwapWindow(_windowHandler);
 }
 
-int DEngine::Core::CleanGL()
+int DEngine::Core::CleanVK()
 {
     auto logger = getMultiSinkLogger();
 
     logger.info("Cleaning engine");
 
-    SDL_GL_DeleteContext(glContext);
-    SDL_DestroyWindow(windowHandler);
+    SDL_GL_DeleteContext(_glContext);
+    SDL_DestroyWindow(_windowHandler);
     SDL_Quit();
 
     return 0;

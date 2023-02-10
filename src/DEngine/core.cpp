@@ -6,50 +6,27 @@
 #include "spdlog_helper.h"
 #include "sdl_helpers.h"
 
-
-DEngine::Core::Core(const RendererType &rendererTypeValue): rendererType(rendererTypeValue)
-{
-
-}
-
-DEngine::Core::~Core()
-{
-    Clean();
-}  
-
-
-SDL_Window* DEngine::Core::getSDLwinHandler()
-{
-    return windowHandler;
-}
-
-SDL_GLContext DEngine::Core::getSDLglContext()
-{
-    return glContext;
-}
-
-DEngine::DEDirectX11Context DEngine::Core::getDX11Context()
-{
-    return dxContext;
-}
-
-
+#include "dx11/coreDX11.h"
+#include "openGl/coreGL.h"
 
 // This implementations are temporal, need to avoid the overhead of using switch to select different implementations, 
 // here is not a problem because this functions are called only couple of times and are not performance sensitive
 // but should be avoided for more frecuent functions 
-int DEngine::Core::Init(const char* title, const int &width, const int &height, const int &flags )
+int DEngine::Core::Init(DE &engine)
 {
     int result;
     auto logger = getMultiSinkLogger();
 
-    switch (rendererType)
+    switch (engine.rendererType)
     {
         case RendererType::DirectX11 :
-            result = InitDX11(title, width,height,flags);
+            result = InitDX11(engine);
             break;
         case RendererType::OpenGl :
-            result = InitGL(title, width,height,flags); 
+            result = InitGL(engine); 
+            break;
+        case RendererType::Vulkan :
+            // result = InitVK(engine); 
             break;
         default:
             break;
@@ -61,7 +38,7 @@ int DEngine::Core::Init(const char* title, const int &width, const int &height, 
 
         // The icon is attached to the window pointer
         if (surface == nullptr) logger.warn("Could not load windows icon");
-        else SDL_SetWindowIcon(windowHandler, surface);
+        else SDL_SetWindowIcon(engine.windowHandler, surface);
         // ...and the surface containing the icon pixel data is no longer required.
         SDL_FreeSurface(surface);
     }
@@ -70,15 +47,18 @@ int DEngine::Core::Init(const char* title, const int &width, const int &height, 
 }
 
 
-int DEngine::Core::Clean()
+int DEngine::Core::Clean(DE &engine)
 {
-    switch (rendererType)
+    switch (engine.rendererType)
     {
         case RendererType::DirectX11 :
-            return CleanDX11();
+            return CleanDX11(engine);
             break;
         case RendererType::OpenGl :
-            return CleanGL(); 
+            return CleanGL(engine); 
+            break;
+        case RendererType::Vulkan :
+            // return CleanVK(); 
             break;
         default:
             break;
@@ -86,17 +66,34 @@ int DEngine::Core::Clean()
 }
 
 // TODO this definetively need to be changed
-void DEngine::Core::Render()
+void DEngine::Core::Render(DE &engine)
 {
-    switch (rendererType)
+    switch (engine.rendererType)
     {
         case RendererType::DirectX11 :
-            return RenderDX11();
+            return RenderDX11(engine);
             break;
         case RendererType::OpenGl :
-            return RenderGL(); 
+            return RenderGL(engine); 
+            break;
+        case RendererType::Vulkan :
+            // return RenderVK();
             break;
         default:
             break;
+    }
+}
+
+void DEngine::Core::Run(DE &engine)
+{
+    SDL_Event event;
+    bool quit = false;
+    while (!quit) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                quit = true;
+            }
+        }
+        DEngine::Core::Render(engine);
     }
 }
