@@ -27,7 +27,7 @@ int main(void)
     auto logger = getMultiSinkLogger();
 
     DEngine::DE App;
-    App.rendererType = DEngine::RendererType::DirectX11;
+    App.rendererType = DEngine::RendererType::OpenGl;
     App.config.title = "DEngine App";
     App.config.width = 800;
     App.config.height = 600;

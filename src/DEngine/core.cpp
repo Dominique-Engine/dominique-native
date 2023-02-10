@@ -65,27 +65,43 @@ int DEngine::Core::Clean(DE &engine)
     }
 }
 
-// TODO this definetively need to be changed
+
 void DEngine::Core::Render(DE &engine)
 {
-    switch (engine.rendererType)
-    {
-        case RendererType::DirectX11 :
-            return RenderDX11(engine);
-            break;
-        case RendererType::OpenGl :
-            return RenderGL(engine); 
-            break;
-        case RendererType::Vulkan :
-            // return RenderVK();
-            break;
-        default:
-            break;
-    }
+    // switch (engine.rendererType)
+    // {
+    //     case RendererType::DirectX11 :
+    //         return RenderDX11(engine);
+    //         break;
+    //     case RendererType::OpenGl :
+    //         return RenderGL(engine); 
+    //         break;
+    //     case RendererType::Vulkan :
+    //         // return RenderVK();
+    //         break;
+    //     default:
+    //         break;
+    // }
 }
 
 void DEngine::Core::Run(DE &engine)
 {
+    auto renderer = RenderDX11;
+
+    switch (engine.rendererType)
+    {
+        case RendererType::DirectX11 :
+            break;
+        case RendererType::OpenGl :
+            renderer = RenderGL; 
+            break;
+        case RendererType::Vulkan :
+            // renderer = RenderVK;
+            break;
+        default:
+            break;
+    }
+
     SDL_Event event;
     bool quit = false;
     while (!quit) {
@@ -94,6 +110,6 @@ void DEngine::Core::Run(DE &engine)
                 quit = true;
             }
         }
-        DEngine::Core::Render(engine);
+        renderer(engine);
     }
 }
