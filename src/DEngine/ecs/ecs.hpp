@@ -2,31 +2,6 @@
 #include <bitset>
 #include <vector>
 
-/**
- *  Example code
- *
-    struct TransformComponent
-    {
-        float position{ 1.0f };
-        float rotation{ 2.0f };
-    };
-    struct TagIdComponent
-    {
-        int id{ 2 };
-    };
-    printf("TransformComponent ID: %i\n",
- dengine::ecs::GetId<TransformComponent>()); printf("TagId ID: %i\n",
- dengine::ecs::GetId<TagIdComponent>());
-
-    dengine::ecs::Scene scene;
-    dengine::ecs::EntityID newEnt = scene.NewEntity();
-    scene.Assign<TransformComponent>(newEnt);
-    auto t = scene.Get<TransformComponent>(newEnt);
-    t->position = 3.0f;
-    printf("TransformComponent position: %f\n",
- scene.Get<TransformComponent>(newEnt)->position);
-*/
-
 // Seems good to use it in here, but not fully tested
 int s_componentCounterDEngine = 0;
 

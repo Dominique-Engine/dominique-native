@@ -10,17 +10,17 @@
 #include <string>
 #include <vector>
 
-unsigned char random_char() {
+unsigned char RandomChar() {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<> dis(0, 255);
   return static_cast<unsigned char>(dis(gen));
 }
 
-std::string generate_hex(const unsigned int len) {
+std::string GenerateHex(const unsigned int len) {
   std::stringstream ss;
   for (auto i = 0; i < len; i++) {
-    auto rc = random_char();
+    auto rc = RandomChar();
     std::stringstream hexstream;
     hexstream << std::hex << int(rc);
     auto hex = hexstream.str();
@@ -30,20 +30,19 @@ std::string generate_hex(const unsigned int len) {
 }
 
 namespace dengine {
-namespace Utils {
+namespace utils {
 namespace uuids {
 
-struct uuid {
+struct Uuid {
  public:
   typedef uint8_t value_type;
   typedef uint8_t& reference;
   typedef uint8_t const& const_reference;
   typedef uint8_t* iterator;
   typedef uint8_t const* const_iterator;
-  typedef std::size_t size_type;
   typedef std::ptrdiff_t difference_type;
 
-  static constexpr size_type static_size() noexcept { return 16; }
+  static constexpr std::size_t static_size() noexcept { return 16; }
   std::string to_string() {
     std::stringstream ss;
     for (int i = 0; i < 16; ++i) {
@@ -61,9 +60,7 @@ struct uuid {
   iterator end() noexcept { return data + size(); }
   const_iterator end() const noexcept { return data + size(); }
 
-  constexpr size_type size() const noexcept { return static_size(); }
-
-  bool is_nil() const noexcept;
+  constexpr std::size_t size() const noexcept { return static_size(); }
 
   enum variant_type {
     variant_ncs,        // NCS backward compatibility
@@ -87,7 +84,7 @@ struct uuid {
     }
   }
 
-  enum version_type {
+  enum VersionType {
     version_unknown = -1,
     version_time_based = 1,
     version_dce_security = 2,
@@ -95,7 +92,7 @@ struct uuid {
     version_random_number_based = 4,
     version_name_based_sha1 = 5
   };
-  version_type version() const noexcept {
+  VersionType version() const noexcept {
     // version is stored in octet 9
     // which is index 6, since indexes count backwards
     uint8_t octet9 = data[6];
@@ -114,37 +111,32 @@ struct uuid {
     }
   }
 
-  // note: linear complexity
-  void swap(uuid& rhs) noexcept;
-
  public:
   // or should it be array<uint8_t, 16>
   uint8_t data[16];
 };
 
-bool operator==(uuid const& lhs, uuid const& rhs) noexcept;
-bool operator<(uuid const& lhs, uuid const& rhs) noexcept;
+bool operator==(Uuid const& lhs, Uuid const& rhs) noexcept;
+bool operator<(Uuid const& lhs, Uuid const& rhs) noexcept;
 
-inline bool operator!=(uuid const& lhs, uuid const& rhs) noexcept {
+inline bool operator!=(Uuid const& lhs, Uuid const& rhs) noexcept {
   return !(lhs == rhs);
 }
 
-inline bool operator>(uuid const& lhs, uuid const& rhs) noexcept {
+inline bool operator>(Uuid const& lhs, Uuid const& rhs) noexcept {
   return rhs < lhs;
 }
-inline bool operator<=(uuid const& lhs, uuid const& rhs) noexcept {
+inline bool operator<=(Uuid const& lhs, Uuid const& rhs) noexcept {
   return !(rhs < lhs);
 }
 
-inline bool operator>=(uuid const& lhs, uuid const& rhs) noexcept {
+inline bool operator>=(Uuid const& lhs, Uuid const& rhs) noexcept {
   return !(lhs < rhs);
 }
 
-inline void swap(uuid& lhs, uuid& rhs) noexcept { lhs.swap(rhs); }
-
-inline std::size_t hash_value(uuid const& u) noexcept {
+inline std::size_t hash_value(Uuid const& u) noexcept {
   std::size_t seed = 0;
-  for (uuid::const_iterator i = u.begin(), e = u.end(); i != e; ++i) {
+  for (Uuid::const_iterator i = u.begin(), e = u.end(); i != e; ++i) {
     seed ^=
         static_cast<std::size_t>(*i) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
   }
@@ -152,18 +144,19 @@ inline std::size_t hash_value(uuid const& u) noexcept {
   return seed;
 }
 
-uuid getuuid() {
-  uuid u;
-  std::string uuid_str = generate_hex(32);
-  std::stringstream ss(uuid_str);
+Uuid GetUUID() {
+  Uuid u;
+  std::string uuid_str = GenerateHex(32);
+  // std::stringstream ss(uuid_str);
   for (int i = 0; i < 16; ++i) {
-    int x;
-    ss >> std::hex >> x;
-    u.data[i] = x;
+    // the commented approach does not work
+    // int x;
+    // ss >> std::hex >> x;
+    u.data[i] = uuid_str[i];
   }
   return u;
 }
 
 }  // namespace uuids
-}  // namespace Utils
+}  // namespace utils
 }  // namespace dengine
