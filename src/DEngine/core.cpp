@@ -22,9 +22,6 @@ int dengine::core::Init(DE &engine) {
     case RendererType::OpenGl:
       result = InitGL(engine);
       break;
-    case RendererType::Vulkan:
-      // result = InitVK(engine);
-      break;
     default:
       break;
   }
@@ -53,9 +50,6 @@ int dengine::core::Clean(DE &engine) {
       break;
     case RendererType::OpenGl:
       return CleanGL(engine);
-      break;
-    case RendererType::Vulkan:
-      // return CleanVK();
       break;
     default:
       break;
@@ -88,9 +82,6 @@ void dengine::core::Run(DE &engine) {
       break;
     case RendererType::OpenGl:
       renderer = SetupRendererGL(engine);
-      break;
-    case RendererType::Vulkan:
-      // renderer = RenderVK;
       break;
     default:
       break;

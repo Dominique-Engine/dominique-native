@@ -1,13 +1,3 @@
-/**
- * @file dx11_helpers.h
- * @author Copied from DearImGui (you@domain.com)
- * @brief
- * @version 0.1
- * @date 2021-11-21
- *
- *
- */
-// TODO understand, refactor and improve everything here
 #include "dx11_helpers.h"
 
 #pragma comment(lib, "dxgi")

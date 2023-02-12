@@ -7,7 +7,7 @@ typedef struct SDL_Window SDL_Window;
 typedef void *SDL_GLContext;
 
 namespace dengine {
-enum class RendererType { OpenGl, DirectX11, Vulkan };
+enum class RendererType { OpenGl, DirectX11 };
 
 struct DEConfig {
   float clearColor[4];

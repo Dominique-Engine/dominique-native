@@ -13,10 +13,8 @@ add_definitions( -DSDL_MAIN_HANDLED )#fix use of SDL, not fully tested on all pl
 set(DENGINE_SHARED      off CACHE BOOL "Build shared library") 
 set(DENGINE_EXAMPLES    on CACHE BOOL "Build examples") 
 set(DENGINE_DIRECTX11   on CACHE BOOL "Build with directx11 support") 
-set(DENGINE_VULKAN      on CACHE BOOL "Build with vulkan support") 
 set(DENGINE_OPENGL      on CACHE BOOL "Build with opengl support") 
 
-set(VK_LINK_OPTIONS "")
 set(DX11_LINK_OPTIONS "")
 set(GL_LINK_OPTIONS "")
 
@@ -43,7 +41,6 @@ set(DOMINIQUE_SOURCES
     "src/dengine/dx11/coreDX11.cpp"
     "src/dengine/dx11/dx11_helpers.cpp"
     "src/dengine/openGL/coreGL.cpp"
-    # "src/dengine/coreVK.cpp"
     "src/dengine/spdlog_helper.cpp"
     "src/dengine/sdl_helpers.cpp"
 )
@@ -73,13 +70,6 @@ collect_and_find( SDL2 "https://github.com/libsdl-org/SDL"      "release-2.0.14"
 include_directories(${COLLECTOR_BASE_INSTALL_PREFIX}/SRCONLY/_glm.git)
 include_directories("src")
 
-
-if(DENGINE_VULKAN)
-    find_package(Vulkan REQUIRED)
-    set(VK_LINK_OPTIONS Vulkan::Vulkan)
-    # set(VK_LINK_OPTIONS vulkan-1)
-endif(DENGINE_VULKAN)
-
 if(DENGINE_OPENGL)
     set(GL_LINK_OPTIONS glad)
 endif(DENGINE_OPENGL)
@@ -92,10 +82,10 @@ if(${SDL2_FOUND})
     if (WIN32)       #Windows settings
         if(DENGINE_SHARED)
             #target_link_libraries (dominique PRIVATE SDL2::SDL2main SDL2::SDL2 glad spdlog::spdlog d3d11 dxgi d3dcompiler shell32)#for sdl_opengl3 by find package
-            target_link_libraries (dominique PRIVATE SDL2::SDL2main SDL2::SDL2 ${GL_LINK_OPTIONS} spdlog::spdlog ${DX11_LINK_OPTIONS} shell32 ${VK_LINK_OPTIONS})#for sdl_opengl3 by find package
+            target_link_libraries (dominique PRIVATE SDL2::SDL2main SDL2::SDL2 ${GL_LINK_OPTIONS} spdlog::spdlog ${DX11_LINK_OPTIONS} shell32)#for sdl_opengl3 by find package
         endif(DENGINE_SHARED)
 
-        target_link_libraries (dominique_static PRIVATE SDL2::SDL2main SDL2::SDL2-static ${GL_LINK_OPTIONS} spdlog::spdlog ${DX11_LINK_OPTIONS} shell32 ${VK_LINK_OPTIONS})#for sdl_opengl3 by find package
+        target_link_libraries (dominique_static PRIVATE SDL2::SDL2main SDL2::SDL2-static ${GL_LINK_OPTIONS} spdlog::spdlog ${DX11_LINK_OPTIONS} shell32)#for sdl_opengl3 by find package
     elseif(UNIX AND NOT APPLE)#for linux only
         if(DENGINE_SHARED)
             target_link_libraries (dominique PRIVATE SDL2 ${CMAKE_DL_LIBS} glad spdlog::spdlog)#for sdl_opengl3 by find package

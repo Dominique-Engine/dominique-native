@@ -63,7 +63,7 @@ int dengine::core::InitDX11(DE &engine) {
   return 0;
 }
 
-void dengine::core::RenderDX11(DE &engine) {
+void dengine::core::RenderDX11(DE &engine, const RenderDataDX11 &data) {
   _dxContext.pd3dDeviceContext->OMSetRenderTargets(
       1, &_dxContext.mainRenderTargetView, NULL);
   _dxContext.pd3dDeviceContext->ClearRenderTargetView(
@@ -85,5 +85,10 @@ int dengine::core::CleanDX11(DE &engine) {
 
 std::function<void(dengine::DE &)> dengine::core::SetupRendererDX11(
     DE &engine) {
-  return dengine::core::RenderDX11;
+  RenderDataDX11 data;
+
+  auto renderer = [=](dengine::DE &engine) {
+    return dengine::core::RenderDX11(engine, data);
+  };
+  return renderer;
 }

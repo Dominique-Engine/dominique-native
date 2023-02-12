@@ -84,7 +84,7 @@ int dengine::core::InitGL(DE &engine) {
   return 0;
 }
 
-void dengine::core::RenderGL(DE &engine, const RenderData &data) {
+void dengine::core::RenderGL(DE &engine, const RenderDataGL &data) {
   glClear(GL_COLOR_BUFFER_BIT);
 
   glUseProgram(data.shader.shaderProgram);
@@ -111,7 +111,7 @@ int dengine::core::CleanGL(DE &engine) {
 std::function<void(dengine::DE &)> dengine::core::SetupRendererGL(DE &engine) {
   glClear(GL_COLOR_BUFFER_BIT);
 
-  RenderData data;
+  RenderDataGL data;
 
   // TESTING
   float vertices[] = {
