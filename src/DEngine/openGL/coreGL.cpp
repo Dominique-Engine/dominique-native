@@ -7,6 +7,16 @@
 
 #include "shaders.h"
 
+void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
+                                GLenum severity, GLsizei length,
+                                const GLchar *message, const void *userParam) {
+  auto logger = getMultiSinkLogger();
+  // TODO: use a switch to message type, error, warn, info, based on: type ==
+  // GL_DEBUG_TYPE_ERROR
+  // TODO: log a huan readable version of type and severity
+  logger.error("GL CALLBACK: message = {}", message);
+}
+
 int dengine::core::InitGL(DE &engine) {
   auto logger = getMultiSinkLogger();
 
@@ -55,6 +65,10 @@ int dengine::core::InitGL(DE &engine) {
   // Use v-sync
   SDL_GL_SetSwapInterval(1);
 
+  // Enable debug output
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(MessageCallback, 0);
+
   // Disable depth test and face culling.
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
@@ -70,74 +84,14 @@ int dengine::core::InitGL(DE &engine) {
   return 0;
 }
 
-void dengine::core::RenderGL(DE &engine) {
+void dengine::core::RenderGL(DE &engine, const RenderData &data) {
   glClear(GL_COLOR_BUFFER_BIT);
 
-  // TESTING
-  float vertices[] = {
-      -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f,
-  };
+  glUseProgram(data.shader.shaderProgram);
 
-  unsigned int VAO;
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
-
-  unsigned int VBO;
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  // vertex shader
-  unsigned int vertexShader;
-  vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-  glCompileShader(vertexShader);
-
-  int success;
-  char infoLog[512];
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    getMultiSinkLogger().info("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
-                              infoLog);
-  }
-
-  // fragment shader
-  unsigned int fragmentShader;
-  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-  glCompileShader(fragmentShader);
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-    getMultiSinkLogger().info("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED {}",
-                              infoLog);
-  }
-
-  // shader program
-  unsigned int shaderProgram;
-  shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    getMultiSinkLogger().info("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
-                              infoLog);
-  }
-  glUseProgram(shaderProgram);
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-
-  //  tell OpenGL how it should interpret the vertex data
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
-
-  glBindVertexArray(VAO);
+  glBindVertexArray(data.vaoID[0]);
   glDrawArrays(GL_TRIANGLES, 0, 3);
-
-  // DONE TESTING
+  glBindVertexArray(0);  // Unbind our Vertex Array Object
 
   SDL_GL_SwapWindow(engine.windowHandler);
 }
@@ -154,74 +108,71 @@ int dengine::core::CleanGL(DE &engine) {
   return 0;
 }
 
-void dengine::core::SetupRenderer(DE &engine) {
+std::function<void(dengine::DE &)> dengine::core::SetupRendererGL(DE &engine) {
   glClear(GL_COLOR_BUFFER_BIT);
+
+  RenderData data;
 
   // TESTING
   float vertices[] = {
       -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f,
   };
 
-  unsigned int VAO;
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
+  glGenVertexArrays(1, &data.vaoID[0]);  // Create our Vertex Array Object
+  glBindVertexArray(
+      data.vaoID[0]);  // Bind our Vertex Array Object so we can use it
 
-  unsigned int VBO;
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glGenBuffers(1, data.vboID);
+  glBindBuffer(GL_ARRAY_BUFFER, data.vboID[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+  // tell OpenGL how it should interpret the vertex data
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glEnableVertexAttribArray(0);  // Disable our Vertex Array Object
+  glBindVertexArray(0);          // Disable our Vertex Buffer Object
+
   // vertex shader
-  unsigned int vertexShader;
-  vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-  glCompileShader(vertexShader);
+  data.shader.vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(data.shader.vertexShader, 1, &vertexShaderSource, NULL);
+  glCompileShader(data.shader.vertexShader);
 
   int success;
   char infoLog[512];
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+  glGetShaderiv(data.shader.vertexShader, GL_COMPILE_STATUS, &success);
   if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+    glGetShaderInfoLog(data.shader.vertexShader, 512, NULL, infoLog);
     getMultiSinkLogger().info("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
                               infoLog);
   }
 
   // fragment shader
-  unsigned int fragmentShader;
-  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-  glCompileShader(fragmentShader);
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+  data.shader.fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(data.shader.fragmentShader, 1, &fragmentShaderSource, NULL);
+  glCompileShader(data.shader.fragmentShader);
+  glGetShaderiv(data.shader.fragmentShader, GL_COMPILE_STATUS, &success);
   if (!success) {
-    glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+    glGetShaderInfoLog(data.shader.fragmentShader, 512, NULL, infoLog);
     getMultiSinkLogger().info("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED {}",
                               infoLog);
   }
 
   // shader program
-  unsigned int shaderProgram;
-  shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+  data.shader.shaderProgram = glCreateProgram();
+  glAttachShader(data.shader.shaderProgram, data.shader.vertexShader);
+  glAttachShader(data.shader.shaderProgram, data.shader.fragmentShader);
+  glLinkProgram(data.shader.shaderProgram);
+  glGetProgramiv(data.shader.shaderProgram, GL_LINK_STATUS, &success);
   if (!success) {
-    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+    glGetProgramInfoLog(data.shader.shaderProgram, 512, NULL, infoLog);
     getMultiSinkLogger().info("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
                               infoLog);
   }
-  glUseProgram(shaderProgram);
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
+  glDeleteShader(data.shader.vertexShader);
+  glDeleteShader(data.shader.fragmentShader);
 
-  //  tell OpenGL how it should interpret the vertex data
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
-
-  glBindVertexArray(VAO);
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-
-  // DONE TESTING
-
-  SDL_GL_SwapWindow(engine.windowHandler);
+  data.test = 200;
+  auto renderer = [=](dengine::DE &engine) {
+    return dengine::core::RenderGL(engine, data);
+  };
+  return renderer;
 }

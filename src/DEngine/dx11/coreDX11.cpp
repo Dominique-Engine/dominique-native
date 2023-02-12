@@ -82,3 +82,8 @@ int dengine::core::CleanDX11(DE &engine) {
 
   return 0;
 }
+
+std::function<void(dengine::DE &)> dengine::core::SetupRendererDX11(
+    DE &engine) {
+  return dengine::core::RenderDX11;
+}

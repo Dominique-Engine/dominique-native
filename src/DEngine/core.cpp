@@ -80,13 +80,14 @@ void dengine::core::Render(DE &engine) {
 }
 
 void dengine::core::Run(DE &engine) {
-  auto renderer = RenderDX11;
+  std::function<void(DE & engine)> renderer;
 
   switch (engine.rendererType) {
     case RendererType::DirectX11:
+      renderer = SetupRendererDX11(engine);
       break;
     case RendererType::OpenGl:
-      renderer = RenderGL;
+      renderer = SetupRendererGL(engine);
       break;
     case RendererType::Vulkan:
       // renderer = RenderVK;
