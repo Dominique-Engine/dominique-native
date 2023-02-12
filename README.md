@@ -88,12 +88,14 @@ int main {
 ```
 
 ### ecs
-This module is a very basic entity component system, maybe it is not very performant, but it is a good start to learn how to use it and how to improve it.
+This module is a very basic entity component system, maybe it is not very performant.
 
 ``` c++
 #include "dengine/ecs/ecs.hpp"
 
 int main {
+  auto logger = getMultiSinkLogger();
+
   struct TransformComponent {
     float position{1.0f};
     float rotation{2.0f};
@@ -119,3 +121,27 @@ int main {
   return 0;
 }
 ```
+
+``` c++
+#include "dengine/ecs/ecs.hpp"
+
+int main {
+  auto logger = getMultiSinkLogger();
+
+  dengine::ecs::Scene scene;
+  dengine::ecs::EntityID newEnt = scene.NewEntity();
+  dengine::ecs::EntityID newEnt2 = scene.NewEntity();
+  logger.info("Index of newEnt2: {}", newEnt2.index);
+  scene.DestroyEntity(newEnt2);
+  dengine::ecs::EntityID newEnt3 = scene.NewEntity();
+  logger.info("Index of newEnt3 should be equal to index of deleted newEnt2");
+  logger.info("Index of newEnt3: {}", newEnt3.index);
+
+  return 0;
+}
+```
+
+## Webgraphy
+- style guide: [google](https://google.github.io/styleguide/cppguide.html)
+- ecs: [this blog](https://www.david-colson.com/2020/02/09/making-a-simple-ecs.html)
+- uuid: [this header](https://www.boost.org/doc/libs/1_81_0/boost/uuid/uuid.hpp), [this blog](https://lowrey.me/guid-generation-in-c-11/), the good old wikipedia

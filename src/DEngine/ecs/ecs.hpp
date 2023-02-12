@@ -1,6 +1,7 @@
 #pragma once
 #include <bitset>
 #include <vector>
+#include <dengine/utils/uuid.h>
 
 // Seems good to use it in here, but not fully tested
 int s_componentCounterDEngine = 0;
@@ -22,7 +23,12 @@ int GetId() {
 const int MAX_ENTITIES =
     32;  // WARN, TODO when this is too big SDL audio initialization crashes
 const int MAX_COMPONENTS = 32;
-typedef unsigned long long EntityID;
+typedef unsigned long long EntityIndex;
+struct EntityID {
+  EntityIndex index;
+  dengine::utils::uuids::Uuid uuid;  // needed to correctly delete
+};
+
 typedef std::bitset<MAX_COMPONENTS> ComponentMask;
 
 // Generic component pool, stores a block of memory for each component type
@@ -59,22 +65,39 @@ struct Scene {
     ComponentMask mask;
   };
   std::vector<EntityDesc> entities;
+  std::vector<EntityIndex> freeEntities;
   std::vector<ComponentPool> componentPools;
 
   // Get a component from an entity
   template <typename T>
   T* Get(EntityID id) {
     int componentId = GetId<T>();
-    if (!entities[id].mask.test(componentId)) return nullptr;
+    if (!entities[id.index].mask.test(componentId)) return nullptr;
 
-    T* pComponent = static_cast<T*>(componentPools[componentId].get(id));
+    T* pComponent = static_cast<T*>(componentPools[componentId].get(id.index));
     return pComponent;
   }
 
   // Create a new entity
   EntityID NewEntity() {
-    entities.push_back({entities.size(), ComponentMask()});
+    if (!freeEntities.empty()) {
+      EntityIndex newIndex = freeEntities.back();
+      freeEntities.pop_back();
+      EntityID newID = {newIndex, dengine::utils::uuids::GetUUID()};
+      entities[newIndex].id = newID;
+      return entities[newIndex].id;
+    }
+    entities.push_back(
+        {{entities.size(), dengine::utils::uuids::GetUUID()}, ComponentMask()});
     return entities.back().id;
+  }
+
+  // Destroys an entity
+  void DestroyEntity(EntityID id) {
+    EntityID newID = {-1, dengine::utils::uuids::GetUUID()};
+    entities[id.index].id = newID;
+    entities[id.index].mask.reset();
+    freeEntities.push_back(id.index);
   }
 
   // Assign a component to an entity
@@ -93,10 +116,19 @@ struct Scene {
     }
 
     // Looks up the component in the pool, and initializes it with placement new
-    T* pComponent = new (componentPools[componentId].get(id)) T();
+    T* pComponent = new (componentPools[componentId].get(id.index)) T();
 
-    entities[id].mask.set(componentId);
+    entities[id.index].mask.set(componentId);
     return pComponent;
+  }
+
+  template <typename T>
+  void Remove(EntityID id) {
+    // ensures you're not accessing an entity that has been deleted
+    if (entities[id.index].id.uuid != id.uuid) return;
+
+    int componentId = GetId<T>();
+    entities[id.index].mask.reset(componentId);
   }
 };
 

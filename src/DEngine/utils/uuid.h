@@ -35,12 +35,8 @@ namespace uuids {
 
 struct Uuid {
  public:
-  typedef uint8_t value_type;
-  typedef uint8_t& reference;
-  typedef uint8_t const& const_reference;
   typedef uint8_t* iterator;
   typedef uint8_t const* const_iterator;
-  typedef std::ptrdiff_t difference_type;
 
   static constexpr std::size_t static_size() noexcept { return 16; }
   std::string to_string() {
@@ -116,7 +112,9 @@ struct Uuid {
   uint8_t data[16];
 };
 
+// TODO
 bool operator==(Uuid const& lhs, Uuid const& rhs) noexcept;
+// TODO
 bool operator<(Uuid const& lhs, Uuid const& rhs) noexcept;
 
 inline bool operator!=(Uuid const& lhs, Uuid const& rhs) noexcept {
