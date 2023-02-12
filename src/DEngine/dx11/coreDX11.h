@@ -1,14 +1,14 @@
 #include <d3d11.h>
-#include <DEngine/core.h>
+#include <dengine/core.h>
 
 #include "dx11_helpers.h"
 
-namespace DEngine {
+namespace dengine {
 
-    namespace Core {
-        //DirectX11 related
-        int InitDX11(DE &engine);
-        int CleanDX11(DE &engine);
-        void RenderDX11(DE &engine);
-    }
-}
+namespace core {
+// DirectX11 related
+int InitDX11(DE &engine);
+int CleanDX11(DE &engine);
+void RenderDX11(DE &engine);
+}  // namespace core
+}  // namespace dengine

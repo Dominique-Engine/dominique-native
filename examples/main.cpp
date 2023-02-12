@@ -1,42 +1,65 @@
 #ifndef APP_VERSION
-# define APP_VERSION "0.0.0"
+#define APP_VERSION "0.0.0"
 #endif
-//#define SDL_MAIN_HANDLED//not needed in msvc,need to enable this from cmake, now is needed in msvc, wtf
-//#define RC_INVOKED//this shouldn't be done
+// #define SDL_MAIN_HANDLED//not needed in msvc,need to enable this from cmake,
+// now is needed in msvc, wtf #define RC_INVOKED//this shouldn't be done
 
 #ifndef APP_VERSION
-# define APP_VERSION "0.0.0"
+#define APP_VERSION "0.0.0"
 #endif
 
-
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 
-
-#include "DEngine/spdlog_helper.h"
-#include "DEngine/core.h"
-#include "DEngine/sdl_helpers.h"
-
+#include "dengine/ecs/ecs.hpp"
+#include "dengine/core.h"
+#include "dengine/sdl_helpers.h"
+#include "dengine/spdlog_helper.h"
+#include "dengine/utils/uuid.h"
 
 using namespace std;
 
+int main(void) {
+  auto logger = getMultiSinkLogger();
+  logger.info("TEsting");
 
-int main(void)
-{
-    auto logger = getMultiSinkLogger();
+  // ecs Example use
+  struct TransformComponent {
+    float position{1.0f};
+    float rotation{2.0f};
+  };
+  struct TagIdComponent {
+    int id{2};
+  };
+  logger.info("TransformComponent ID: {}",
+              dengine::ecs::GetId<TransformComponent>());
+  logger.info("TagId ID: {}", dengine::ecs::GetId<TagIdComponent>());
 
-    DEngine::DE App;
-    App.rendererType = DEngine::RendererType::OpenGl;
-    App.config.title = "DEngine App";
-    App.config.width = 800;
-    App.config.height = 600;
+  dengine::ecs::Scene scene;
+  dengine::ecs::EntityID newEnt = scene.NewEntity();
+  scene.Assign<TransformComponent>(newEnt);
+  auto t = scene.Get<TransformComponent>(newEnt);
+  t->position = 3.0f;
+  logger.info("TransformComponent position: {}",
+              scene.Get<TransformComponent>(newEnt)->position);
 
-    DEngine::logSDL2renderersInfo();
-    
-    DEngine::Core::Init(App);
-    DEngine::Core::Run(App);
-    DEngine::Core::Clean(App);
+  // UUIDS
+  logger.info("UUID: {}", dengine::Utils::uuids::getuuid().to_string());
+  logger.info("UUID: {}", generate_hex(13));
 
-    return 0;
+  // Graphical App
+  dengine::DE App;
+  App.rendererType = dengine::RendererType::OpenGl;
+  App.config.title = "dengine App";
+  App.config.width = 800;
+  App.config.height = 600;
+
+  dengine::logSDL2renderersInfo();
+
+  dengine::core::Init(App);
+  dengine::core::Run(App);
+  dengine::core::Clean(App);
+
+  return 0;
 }

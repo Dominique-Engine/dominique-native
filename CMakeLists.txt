@@ -39,14 +39,13 @@ set (CMAKE_CXX_STANDARD 17)
 
 
 set(DOMINIQUE_SOURCES
-    "src/DEngine/core.cpp"
-    "src/DEngine/dx11/coreDX11.cpp"
-    "src/DEngine/dx11/dx11_helpers.cpp"
-    "src/DEngine/openGL/coreGL.cpp"
-    # "src/DEngine/coreVK.cpp"
-    "src/DEngine/spdlog_helper.cpp"
-    "src/DEngine/sdl_helpers.cpp"
-    "src/DEngine/Drawable/drawable.cpp"
+    "src/dengine/core.cpp"
+    "src/dengine/dx11/coreDX11.cpp"
+    "src/dengine/dx11/dx11_helpers.cpp"
+    "src/dengine/openGL/coreGL.cpp"
+    # "src/dengine/coreVK.cpp"
+    "src/dengine/spdlog_helper.cpp"
+    "src/dengine/sdl_helpers.cpp"
 )
 
 add_library(dominique_static STATIC

@@ -1,11 +1,12 @@
-#include <DEngine/core.h>
+#include <dengine/core.h>
 
-namespace DEngine {
+namespace dengine {
 
-    namespace Core {
-        //DirectX11 related
-        int InitGL(DE &engine);
-        int CleanGL(DE &engine);
-        void RenderGL(DE &engine);
-    }
-}
+namespace core {
+// DirectX11 related
+int InitGL(DE &engine);
+int CleanGL(DE &engine);
+void RenderGL(DE &engine);
+void SetupRenderer(DE &engine);
+}  // namespace core
+}  // namespace dengine

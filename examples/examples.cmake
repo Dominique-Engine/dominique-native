@@ -4,12 +4,12 @@ set (EXAMPLES_FOLDER ${CMAKE_BINARY_DIR}/examples)
 
 #test
 add_executable(DEexample ${GUI_TYPE}
-               "examples/main.cpp"
+    "examples/main.cpp"
 )
 
 
-target_include_directories ( DEexample PRIVATE ${_glad_DIR}/include )#All collections should be installed in this path if used collect_together
-target_link_directories    ( DEexample PRIVATE ${_glad_DIR}/lib)#All collections should be installed in this path if used collect_together
+target_include_directories ( DEexample PRIVATE ${COLLECTOR_BASE_INSTALL_PREFIX}/include )#All collections should be installed in this path if used collect_together
+target_link_directories    ( DEexample PRIVATE ${COLLECTOR_BASE_INSTALL_PREFIX}/lib)#All collections should be installed in this path if used collect_together
 
 target_include_directories ( DEexample PRIVATE "src")
 
@@ -35,5 +35,5 @@ foreach (_file ${ExamplesRequiredExtras})
     endif()
 endforeach()
 add_custom_command(TARGET DEexample POST_BUILD
-                    ${extraFiles}
+    ${extraFiles}
 )
