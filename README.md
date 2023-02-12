@@ -141,6 +141,33 @@ int main {
 }
 ```
 
+``` c++
+#include "dengine/ecs/ecs.hpp"
+
+int main {
+  auto logger = getMultiSinkLogger();
+
+  struct TransformComponent {
+    float position{1.0f};
+    float rotation{2.0f};
+  };
+
+  dengine::ecs::Scene scene;
+  dengine::ecs::EntityID newEnt = scene.NewEntity();
+  scene.Assign<TransformComponent>(newEnt);
+  dengine::ecs::EntityID newEnt2 = scene.NewEntity();
+  scene.Assign<TransformComponent>(newEnt2);
+
+  for (dengine::ecs::EntityID ent :
+       dengine::ecs::SceneView<TransformComponent, TagIdComponent>(scene)) {
+    logger.info("TransformComponent position of ent in index{}: {}", ent.index,
+                scene.Get<TransformComponent>(ent)->position);
+  }
+
+  return 0;
+}
+```
+
 ## Webgraphy
 - style guide: [google](https://google.github.io/styleguide/cppguide.html)
 - ecs: [this blog](https://www.david-colson.com/2020/02/09/making-a-simple-ecs.html)

@@ -29,6 +29,11 @@ struct EntityID {
   dengine::utils::uuids::Uuid uuid;  // needed to correctly delete
 };
 
+inline bool IsEntityValid(EntityID id) {
+  // Check if the index is our invalid index
+  return (id.index >> 32) != EntityIndex(-1);
+}
+
 typedef std::bitset<MAX_COMPONENTS> ComponentMask;
 
 // Generic component pool, stores a block of memory for each component type
@@ -130,6 +135,88 @@ struct Scene {
     int componentId = GetId<T>();
     entities[id.index].mask.reset(componentId);
   }
+};
+
+template <typename... ComponentTypes>
+struct SceneView {
+  SceneView(Scene& scene) : pScene(&scene) {
+    if (sizeof...(ComponentTypes) == 0) {
+      all = true;
+      return;
+    }
+    // Unpack the template parameters into an initializer list
+    int componentIds[] = {0, GetId<ComponentTypes>()...};
+    for (int i = 1; i < (sizeof...(ComponentTypes) + 1); i++) {
+      componentMask.set(componentIds[i]);
+    }
+  }
+
+  struct Iterator {
+    Iterator(Scene* pScene, EntityIndex index, ComponentMask mask, bool all)
+        : pScene(pScene), index(index), mask(mask), all(all) {}
+
+    EntityID operator*() const {
+      // give back the entityID we're currently at
+      return pScene->entities[index].id;
+    }
+
+    bool operator==(const Iterator& other) const {
+      return index == other.index || index == pScene->entities.size();
+    }
+
+    bool operator!=(const Iterator& other) const {
+      return index != other.index && index != pScene->entities.size();
+    }
+
+    bool ValidIndex() {
+      return
+          // It's a valid entity ID
+          IsEntityValid(pScene->entities[index].id) &&
+          // It has the correct component mask
+          (all || mask == (mask & pScene->entities[index].mask));
+    }
+
+    Iterator& operator++() {
+      // Move the iterator forward
+      do {
+        index++;
+      } while (index < pScene->entities.size() && !ValidIndex());
+      return *this;
+    }
+
+    EntityIndex index;
+    Scene* pScene;
+    ComponentMask mask;
+    bool all{false};
+  };
+
+  const Iterator begin() const {
+    // Give an iterator to the beginning of this view
+    int firstIndex = 0;
+    while (
+        firstIndex < pScene->entities.size() &&
+        (componentMask != (componentMask & pScene->entities[firstIndex].mask) ||
+         !IsEntityValid(pScene->entities[firstIndex].id))) {
+      firstIndex++;
+    }
+    return Iterator(pScene, firstIndex, componentMask, all);
+  }
+
+  const Iterator end() const {
+    // Give an iterator to the end of this view
+    int lastIndex = pScene->entities.size();
+    while (
+        lastIndex > 0 &&
+        (componentMask != (componentMask & pScene->entities[lastIndex].mask) ||
+         !IsEntityValid(pScene->entities[lastIndex].id))) {
+      lastIndex--;
+    }
+    return Iterator(pScene, lastIndex + 1, componentMask, all);
+  }
+
+  Scene* pScene{nullptr};
+  ComponentMask componentMask;
+  bool all{false};
 };
 
 }  // namespace ecs

@@ -21,7 +21,6 @@
 using namespace std;
 
 int main(void) {
-  // Graphical App
   dengine::DE App;
   App.rendererType = dengine::RendererType::OpenGl;
   App.config.title = "DEngine App";
