@@ -8,7 +8,28 @@ void dengine::CreateRenderTarget(DEDirectX11Context& dxContext) {
   dxContext.pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
   dxContext.pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL,
                                                &dxContext.mainRenderTargetView);
+  pBackBuffer->GetDesc(&dxContext.backBufferDesc);
   pBackBuffer->Release();
+}
+
+void dengine::CreateDepthStencilBuffer(DEDirectX11Context& dxContext) {
+  CD3D11_TEXTURE2D_DESC depthStencilDesc(
+      DXGI_FORMAT_D24_UNORM_S8_UINT,
+      static_cast<UINT>(dxContext.backBufferDesc.Width),
+      static_cast<UINT>(dxContext.backBufferDesc.Height),
+      1,  // This depth stencil view has only one texture.
+      1,  // Use a single mipmap level.
+      D3D11_BIND_DEPTH_STENCIL);
+
+  dxContext.pd3dDevice->CreateTexture2D(&depthStencilDesc, nullptr,
+                                        &dxContext.pDepthStencil);
+
+  CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(
+      D3D11_DSV_DIMENSION_TEXTURE2D);
+
+  dxContext.pd3dDevice->CreateDepthStencilView(dxContext.pDepthStencil,
+                                               &depthStencilViewDesc,
+                                               &dxContext.pDepthStencilView);
 }
 
 bool dengine::CreateDeviceD3D(HWND hWnd, DEDirectX11Context& dxContext,
@@ -28,15 +49,17 @@ bool dengine::CreateDeviceD3D(HWND hWnd, DEDirectX11Context& dxContext,
   sd.SampleDesc.Count = 1;    // for antialiasing
   sd.SampleDesc.Quality = 0;  // for antialiasing
   sd.Windowed = TRUE;
-  sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+  sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
   UINT createDeviceFlags = 0;
   if (debug)
     createDeviceFlags |=
         D3D11_CREATE_DEVICE_DEBUG;  // TODO not working in debug mode
   D3D_FEATURE_LEVEL featureLevel;
-  const D3D_FEATURE_LEVEL featureLevelArray[2] = {
+  const D3D_FEATURE_LEVEL featureLevelArray[4] = {
+      D3D_FEATURE_LEVEL_11_1,
       D3D_FEATURE_LEVEL_11_0,
+      D3D_FEATURE_LEVEL_10_1,
       D3D_FEATURE_LEVEL_10_0,
   };
   if (D3D11CreateDeviceAndSwapChain(
@@ -48,6 +71,7 @@ bool dengine::CreateDeviceD3D(HWND hWnd, DEDirectX11Context& dxContext,
   }
 
   CreateRenderTarget(dxContext);
+  CreateDepthStencilBuffer(dxContext);
   return true;
 }
 

@@ -170,7 +170,6 @@ std::function<void(dengine::DE &)> dengine::core::SetupRendererGL(DE &engine) {
   glDeleteShader(data.shader.vertexShader);
   glDeleteShader(data.shader.fragmentShader);
 
-  data.test = 200;
   auto renderer = [=](dengine::DE &engine) {
     return dengine::core::RenderGL(engine, data);
   };

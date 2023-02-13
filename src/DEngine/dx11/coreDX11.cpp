@@ -7,6 +7,8 @@
 #include <dengine/spdlog_helper.h>
 
 #include "dx11_helpers.h"
+#include "d3dcompiler.h"
+#include "shaders.h"
 
 DEDirectX11Context _dxContext;
 
@@ -64,10 +66,45 @@ int dengine::core::InitDX11(DE &engine) {
 }
 
 void dengine::core::RenderDX11(DE &engine, const RenderDataDX11 &data) {
-  _dxContext.pd3dDeviceContext->OMSetRenderTargets(
-      1, &_dxContext.mainRenderTargetView, NULL);
+  // _dxContext.pd3dDeviceContext->UpdateSubresource(m_pConstantBuffer.Get(), 0,
+  // nullptr,
+  //                            &m_constantBufferData, 0, 0);
+
   _dxContext.pd3dDeviceContext->ClearRenderTargetView(
       _dxContext.mainRenderTargetView, engine.config.clearColor);
+
+  _dxContext.pd3dDeviceContext->ClearDepthStencilView(
+      _dxContext.pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+      1.0f, 0);
+
+  _dxContext.pd3dDeviceContext->OMSetRenderTargets(
+      1, &_dxContext.mainRenderTargetView, _dxContext.pDepthStencilView);
+
+  // Set up the IA stage by setting the input topology and layout.
+  UINT stride = sizeof(VertexPositionColor);
+  UINT offset = 0;
+  _dxContext.pd3dDeviceContext->IASetVertexBuffers(0, 1, &data.vertexBuffer,
+                                                   &stride, &offset);
+
+  _dxContext.pd3dDeviceContext->IASetIndexBuffer(data.indexBuffer,
+                                                 DXGI_FORMAT_R16_UINT, 0);
+  // context->IASetInputLayout(m_pInputLayout.Get());
+
+  // Set up the vertex shader stage.
+  _dxContext.pd3dDeviceContext->VSSetShader(data.shader.p_vertexShader, nullptr,
+                                            0);
+
+  // _dxContext.pd3dDeviceContext->VSSetConstantBuffers(0, 1,
+  // m_pConstantBuffer.GetAddressOf());
+
+  // Set up the pixel shader stage.
+  _dxContext.pd3dDeviceContext->PSSetShader(data.shader.p_pixelShader, nullptr,
+                                            0);
+
+  // Calling Draw tells Direct3D to start sending commands to the graphics
+  // device.
+  _dxContext.pd3dDeviceContext->DrawIndexed(data.indexCount, 0, 0);
+
   _dxContext.pSwapChain->Present(1, 0);  // Present with vsync
 }
 
@@ -86,9 +123,130 @@ int dengine::core::CleanDX11(DE &engine) {
 std::function<void(dengine::DE &)> dengine::core::SetupRendererDX11(
     DE &engine) {
   RenderDataDX11 data;
+  // TESTING
+
+  // load and compile the two shaders
+  // ID3D10Blob *VS, *PS;
+  // D3DCompileFromFile(L"BasicHLSL11_VS.hlsl", 0, 0, "VShader", "vs_4_0", 0, 0,
+  //                    &VS, 0);
+  // D3DCompileFromFile(L"BasicHLSL11_PS.hlsl", 0, 0, "PShader", "ps_4_0", 0, 0,
+  //                    &PS, 0);
+
+  // encapsulate both shaders into shader objects
+  // _dxContext.pd3dDevice->CreateVertexShader(VS->GetBufferPointer(),
+  //                                           VS->GetBufferSize(), NULL,
+  //                                           &data.shader.p_vertexShader);
+
+  _dxContext.pd3dDevice->CreateVertexShader(vertexShaderSourceDX11,
+                                            strlen(vertexShaderSourceDX11),
+                                            NULL, &data.shader.p_vertexShader);
+  // _dxContext.pd3dDevice->CreatePixelShader(PS->GetBufferPointer(),
+  //                                          PS->GetBufferSize(), NULL,
+  //                                          &data.shader.p_pixelShader);
+  _dxContext.pd3dDevice->CreatePixelShader(pixelShaderSourceDX11,
+                                           strlen(pixelShaderSourceDX11), NULL,
+                                           &data.shader.p_pixelShader);
+
+  // set the shader objects
+  _dxContext.pd3dDeviceContext->VSSetShader(data.shader.p_vertexShader, 0, 0);
+  _dxContext.pd3dDeviceContext->PSSetShader(data.shader.p_pixelShader, 0, 0);
+
+  CreateCube(data);
 
   auto renderer = [=](dengine::DE &engine) {
     return dengine::core::RenderDX11(engine, data);
   };
   return renderer;
+}
+
+int dengine::core::CreateCube(dengine::core::RenderDataDX11 &data) {
+  HRESULT hr = S_OK;
+
+  // Create cube geometry.
+  VertexPositionColor CubeVertices[] = {
+      {
+          DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f),
+          DirectX::XMFLOAT3(0, 0, 0),
+      },
+      {
+          DirectX::XMFLOAT3(-0.5f, -0.5f, 0.5f),
+          DirectX::XMFLOAT3(0, 0, 1),
+      },
+      {
+          DirectX::XMFLOAT3(-0.5f, 0.5f, -0.5f),
+          DirectX::XMFLOAT3(0, 1, 0),
+      },
+      {
+          DirectX::XMFLOAT3(-0.5f, 0.5f, 0.5f),
+          DirectX::XMFLOAT3(0, 1, 1),
+      },
+
+      {
+          DirectX::XMFLOAT3(0.5f, -0.5f, -0.5f),
+          DirectX::XMFLOAT3(1, 0, 0),
+      },
+      {
+          DirectX::XMFLOAT3(0.5f, -0.5f, 0.5f),
+          DirectX::XMFLOAT3(1, 0, 1),
+      },
+      {
+          DirectX::XMFLOAT3(0.5f, 0.5f, -0.5f),
+          DirectX::XMFLOAT3(1, 1, 0),
+      },
+      {
+          DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f),
+          DirectX::XMFLOAT3(1, 1, 1),
+      },
+  };
+
+  float vertices[] = {
+      -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f,
+  };
+
+  // Create vertex buffer:
+
+  CD3D11_BUFFER_DESC vDesc(sizeof(CubeVertices), D3D11_BIND_VERTEX_BUFFER);
+
+  D3D11_SUBRESOURCE_DATA vData;
+  ZeroMemory(&vData, sizeof(D3D11_SUBRESOURCE_DATA));
+  vData.pSysMem = CubeVertices;
+  vData.SysMemPitch = 0;
+  vData.SysMemSlicePitch = 0;
+
+  hr = _dxContext.pd3dDevice->CreateBuffer(&vDesc, &vData, &data.vertexBuffer);
+
+  // Create index buffer:
+  unsigned short CubeIndices[] = {
+      0, 2, 1,  // -x
+      1, 2, 3,
+
+      4, 5, 6,  // +x
+      5, 7, 6,
+
+      0, 1, 5,  // -y
+      0, 5, 4,
+
+      2, 6, 7,  // +y
+      2, 7, 3,
+
+      0, 4, 6,  // -z
+      0, 6, 2,
+
+      1, 3, 7,  // +z
+      1, 7, 5,
+  };
+
+  data.indexCount = ARRAYSIZE(CubeIndices);
+
+  CD3D11_BUFFER_DESC iDesc(sizeof(CubeIndices), D3D11_BIND_INDEX_BUFFER);
+
+  D3D11_SUBRESOURCE_DATA iData;
+  ZeroMemory(&iData, sizeof(D3D11_SUBRESOURCE_DATA));
+  iData.pSysMem = CubeIndices;
+  iData.SysMemPitch = 0;
+  iData.SysMemSlicePitch = 0;
+
+  hr = _dxContext.pd3dDevice->CreateBuffer(&iDesc, &iData, &data.indexBuffer);
+
+  return hr;
 }

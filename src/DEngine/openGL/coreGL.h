@@ -12,7 +12,6 @@ struct Shader {
 
 struct RenderDataGL {
   Shader shader;
-  int test{100};
   GLuint vaoID[1];  // Our Vertex Array Object
   GLuint vboID[1];  // Our Vertex Buffer Object
 };

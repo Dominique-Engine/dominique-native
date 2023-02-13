@@ -22,12 +22,16 @@ struct DEDirectX11Context {
   ID3D11DeviceContext* pd3dDeviceContext = nullptr;
   IDXGISwapChain* pSwapChain = nullptr;
   ID3D11RenderTargetView* mainRenderTargetView = nullptr;
+  D3D11_TEXTURE2D_DESC backBufferDesc;
+  ID3D11Texture2D* pDepthStencil;
+  ID3D11DepthStencilView* pDepthStencilView;
 };
 
 namespace dengine {
 
 // Helper functions TODO: separate implementation from definition if needed
 void CreateRenderTarget(DEDirectX11Context& dxContext);
+void CreateDepthStencilBuffer(DEDirectX11Context& dxContext);
 
 bool CreateDeviceD3D(HWND hWnd, DEDirectX11Context& dxContext,
                      const bool debug = false);
