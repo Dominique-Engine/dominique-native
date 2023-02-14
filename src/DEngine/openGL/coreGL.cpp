@@ -1,11 +1,11 @@
-#include "coreGL.h"
+// #include "coreGL.h"
+#include "renderer/renderer.h"
+#include "shaders.h"
 
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
 #include <SDL2/SDL_opengl.h>
 #include <dengine/spdlog_helper.h>
-
-#include "shaders.h"
 
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
                                 GLenum severity, GLsizei length,
@@ -84,14 +84,13 @@ int dengine::core::InitGL(DE &engine) {
   return 0;
 }
 
-void dengine::core::RenderGL(DE &engine, const RenderDataGL &data) {
+void dengine::core::RenderGL(
+    DE &engine, const std::vector<dengine::core::RenderDataGL> &data) {
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glUseProgram(data.shader.shaderProgram);
-
-  glBindVertexArray(data.vaoID[0]);
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-  glBindVertexArray(0);  // Unbind our Vertex Array Object
+  for (auto item : data) {
+    DrawPrimitive(item.vaoID, item.vboID, item.shader);
+  }
 
   SDL_GL_SwapWindow(engine.windowHandler);
 }
@@ -111,64 +110,17 @@ int dengine::core::CleanGL(DE &engine) {
 std::function<void(dengine::DE &)> dengine::core::SetupRendererGL(DE &engine) {
   glClear(GL_COLOR_BUFFER_BIT);
 
-  RenderDataGL data;
+  std::vector<RenderDataGL> data;
+  data.resize(1);
 
   // TESTING
-  float vertices[] = {
+  std::vector<float> vertices = {
       -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f,
   };
 
-  glGenVertexArrays(1, &data.vaoID[0]);  // Create our Vertex Array Object
-  glBindVertexArray(
-      data.vaoID[0]);  // Bind our Vertex Array Object so we can use it
+  FillGeometryBuffers(vertices, data[0].vaoID, data[0].vboID);
 
-  glGenBuffers(1, data.vboID);
-  glBindBuffer(GL_ARRAY_BUFFER, data.vboID[0]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  // tell OpenGL how it should interpret the vertex data
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);  // Disable our Vertex Array Object
-  glBindVertexArray(0);          // Disable our Vertex Buffer Object
-
-  // vertex shader
-  data.shader.vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(data.shader.vertexShader, 1, &vertexShaderSource, NULL);
-  glCompileShader(data.shader.vertexShader);
-
-  int success;
-  char infoLog[512];
-  glGetShaderiv(data.shader.vertexShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(data.shader.vertexShader, 512, NULL, infoLog);
-    getMultiSinkLogger().info("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
-                              infoLog);
-  }
-
-  // fragment shader
-  data.shader.fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(data.shader.fragmentShader, 1, &fragmentShaderSource, NULL);
-  glCompileShader(data.shader.fragmentShader);
-  glGetShaderiv(data.shader.fragmentShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(data.shader.fragmentShader, 512, NULL, infoLog);
-    getMultiSinkLogger().info("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED {}",
-                              infoLog);
-  }
-
-  // shader program
-  data.shader.shaderProgram = glCreateProgram();
-  glAttachShader(data.shader.shaderProgram, data.shader.vertexShader);
-  glAttachShader(data.shader.shaderProgram, data.shader.fragmentShader);
-  glLinkProgram(data.shader.shaderProgram);
-  glGetProgramiv(data.shader.shaderProgram, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(data.shader.shaderProgram, 512, NULL, infoLog);
-    getMultiSinkLogger().info("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
-                              infoLog);
-  }
-  glDeleteShader(data.shader.vertexShader);
-  glDeleteShader(data.shader.fragmentShader);
+  CreateShader(&data[0].shader, vertexShaderSource, fragmentShaderSource);
 
   auto renderer = [=](dengine::DE &engine) {
     return dengine::core::RenderGL(engine, data);

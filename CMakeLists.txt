@@ -12,7 +12,7 @@ add_definitions( -DSDL_MAIN_HANDLED )#fix use of SDL, not fully tested on all pl
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 set(DENGINE_SHARED      off CACHE BOOL "Build shared library") 
 set(DENGINE_EXAMPLES    on CACHE BOOL "Build examples") 
-set(DENGINE_DIRECTX11   on CACHE BOOL "Build with directx11 support") 
+set(DENGINE_DIRECTX11   off CACHE BOOL "Build with directx11 support") 
 set(DENGINE_OPENGL      on CACHE BOOL "Build with opengl support") 
 
 set(DX11_LINK_OPTIONS "")
@@ -38,9 +38,10 @@ set (CMAKE_CXX_STANDARD 17)
 
 set(DOMINIQUE_SOURCES
     "src/dengine/core.cpp"
-    "src/dengine/dx11/coreDX11.cpp"
-    "src/dengine/dx11/dx11_helpers.cpp"
+    # "src/dengine/dx11/coreDX11.cpp"
+    # "src/dengine/dx11/dx11_helpers.cpp"
     "src/dengine/openGL/coreGL.cpp"
+    "src/dengine/openGL/renderer/renderer.cpp"
     "src/dengine/spdlog_helper.cpp"
     "src/dengine/sdl_helpers.cpp"
 )
@@ -58,8 +59,12 @@ endif(DENGINE_SHARED)
 
 include_directories("3rdParty")
 
+include_directories(${COLLECTOR_BASE_INSTALL_PREFIX}/SRCONLY/_glm.git)
+include_directories("src")
 
 set(GLAD_INSTALL ON)
+set(DIRECTX OFF)
+append_var_to_cmake_args(DIRECTX)
 append_var_to_cmake_args(GLAD_INSTALL)
 collect(        "https://github.com/Dav1dde/glad"              "v0.1.34"           dominique_static )
 collect_src(    "https://github.com/g-truc/glm.git"            "0.9.9.8"           dominique_static )
@@ -67,8 +72,6 @@ collect_src(    "https://github.com/g-truc/glm.git"            "0.9.9.8"        
 collect_and_find( spdlog "https://github.com/gabime/spdlog"            "v1.8.5"    dominique_static )
 collect_and_find( SDL2 "https://github.com/libsdl-org/SDL"      "release-2.0.14"   dominique_static )
 
-include_directories(${COLLECTOR_BASE_INSTALL_PREFIX}/SRCONLY/_glm.git)
-include_directories("src")
 
 if(DENGINE_OPENGL)
     set(GL_LINK_OPTIONS glad)

@@ -2,7 +2,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "dx11/coreDX11.h"
+// #include "dx11/coreDX11.h"
 #include "openGl/coreGL.h"
 #include "sdl_helpers.h"
 #include "spdlog_helper.h"
@@ -16,9 +16,9 @@ int dengine::core::Init(DE &engine) {
   auto logger = getMultiSinkLogger();
 
   switch (engine.rendererType) {
-    case RendererType::DirectX11:
-      result = InitDX11(engine);
-      break;
+    // case RendererType::DirectX11:
+    //   result = InitDX11(engine);
+    //   break;
     case RendererType::OpenGl:
       result = InitGL(engine);
       break;
@@ -45,9 +45,9 @@ int dengine::core::Init(DE &engine) {
 
 int dengine::core::Clean(DE &engine) {
   switch (engine.rendererType) {
-    case RendererType::DirectX11:
-      return CleanDX11(engine);
-      break;
+    // case RendererType::DirectX11:
+    //   return CleanDX11(engine);
+    //   break;
     case RendererType::OpenGl:
       return CleanGL(engine);
       break;
@@ -77,9 +77,9 @@ void dengine::core::Run(DE &engine) {
   std::function<void(DE & engine)> renderer;
 
   switch (engine.rendererType) {
-    case RendererType::DirectX11:
-      renderer = SetupRendererDX11(engine);
-      break;
+    // case RendererType::DirectX11:
+    //   renderer = SetupRendererDX11(engine);
+    //   break;
     case RendererType::OpenGl:
       renderer = SetupRendererGL(engine);
       break;

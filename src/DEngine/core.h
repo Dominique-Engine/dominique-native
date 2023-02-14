@@ -7,7 +7,10 @@ typedef struct SDL_Window SDL_Window;
 typedef void *SDL_GLContext;
 
 namespace dengine {
-enum class RendererType { OpenGl, DirectX11 };
+enum class RendererType {
+  OpenGl,
+  // DirectX11
+};
 
 struct DEConfig {
   float clearColor[4];
@@ -18,7 +21,7 @@ struct DEConfig {
 };
 
 struct DE {
-  RendererType rendererType;
+  RendererType rendererType = RendererType::OpenGl;
   SDL_Window *windowHandler = nullptr;
   SDL_GLContext glContext;
   DEConfig config = {0.03f, 0.69f, 0.48f, 0.0f};

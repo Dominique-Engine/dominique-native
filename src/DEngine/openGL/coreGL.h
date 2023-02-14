@@ -1,4 +1,5 @@
 #include <dengine/core.h>
+#include <vector>
 
 namespace dengine {
 namespace core {
@@ -12,13 +13,13 @@ struct Shader {
 
 struct RenderDataGL {
   Shader shader;
-  GLuint vaoID[1];  // Our Vertex Array Object
-  GLuint vboID[1];  // Our Vertex Buffer Object
+  GLuint vaoID;  // Our Vertex Array Object
+  GLuint vboID;  // Our Vertex Buffer Object
 };
 
 int InitGL(DE &engine);
 int CleanGL(DE &engine);
-void RenderGL(DE &engine, const RenderDataGL &data);
+void RenderGL(DE &engine, const std::vector<RenderDataGL> &data);
 std::function<void(DE &)> SetupRendererGL(DE &engine);
 
 }  // namespace core
