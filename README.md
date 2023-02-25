@@ -6,7 +6,7 @@ Some things are really basic or plain not ISO compliant, but are just there to g
 
 ![Dominique engine latest example](./images/1.png "a title")
 ## Goals
-- Directx and opengl support
+- ~~Directx~~ and opengl support
 - Data oriented design from the ground up
 - Modern c++
 - Multiplatform
@@ -16,9 +16,9 @@ Some things are really basic or plain not ISO compliant, but are just there to g
 - JUST LEARN ALL THE STUFF
 
 ## Roadman:
-- [ ] Uuid module
-- [ ] Entity component system
-- [ ] 3d directx and opengl performant renderer
+- [x] Uuid module
+- [x] Entity component system
+- [ ] 3d ~~directx~~ and opengl performant renderer
 - [ ] Input abstraction
 - [ ] Inmediate mode gui
 - [ ] 3d physics
@@ -27,7 +27,7 @@ Some things are really basic or plain not ISO compliant, but are just there to g
 ## Stack
 - c++ 11
 - SDL2
-- Directx11
+- ~~Directx11~~
 - OpenGl 4
 - glad
 - glm
@@ -37,8 +37,8 @@ Some things are really basic or plain not ISO compliant, but are just there to g
 ## Requirements
 
 - Python: for GLAD generation
-- Vulkan SDK: to use vulkan during rendering, if not present need to be disabled in cmake
-- Directx SDK: to use directx during rendering, if not present need to be disabled in cmake(and some kind of disabling for complie sdl without directx support, it appears sdl on windows tries to compile to use directx by default)
+- :warning: ~~Vulkan SDK~~: to use vulkan during rendering, if not present need to be disabled in cmake
+- :warning: ~~Directx SDK~~: to use directx during rendering, if not present need to be disabled in cmake(and some kind of disabling for complie sdl without directx support, it appears sdl on windows tries to compile to use directx by default)
 
 ## Issues
 
@@ -53,17 +53,17 @@ This module is the core of the engine, it is a very basic abstraction of the win
 #include "dengine/core.h"
 
 int main() {
-  dengine::DE App;
-  App.rendererType = dengine::RendererType::OpenGl;
+  de::DE App;
+  App.rendererType = de::RendererType::OpenGl; // Not needed for the moment
   App.config.title = "DEngine App";
   App.config.width = 800;
   App.config.height = 600;
 
-  dengine::logSDL2renderersInfo();
+  de::logSDL2renderersInfo();
 
-  dengine::core::Init(App);
-  dengine::core::Run(App);
-  dengine::core::Clean(App);
+  de::core::Init(App);
+  de::core::Run(App);
+  de::core::Clean(App);
 
   return 0;
 }
@@ -80,8 +80,8 @@ int main {
   auto logger = getMultiSinkLogger();
 
   // Different UUIDS
-  logger.info("UUID 1: {}", dengine::utils::uuids::GetUUID().to_string());
-  logger.info("UUID 2: {}", dengine::utils::uuids::GetUUID().to_string());
+  logger.info("UUID 1: {}", de::utils::uuids::GetUUID().to_string());
+  logger.info("UUID 2: {}", de::utils::uuids::GetUUID().to_string());
 
   return 0;
 }
@@ -105,11 +105,11 @@ int main {
   };
 
   logger.info("TransformComponent ID: {}",
-              dengine::ecs::GetId<TransformComponent>());
-  logger.info("TagId ID: {}", dengine::ecs::GetId<TagIdComponent>());
+              de::ecs::GetId<TransformComponent>());
+  logger.info("TagId ID: {}", de::ecs::GetId<TagIdComponent>());
 
-  dengine::ecs::Scene scene;
-  dengine::ecs::EntityID newEnt = scene.NewEntity();
+  de::ecs::Scene scene;
+  de::ecs::EntityID newEnt = scene.NewEntity();
   scene.Assign<TransformComponent>(newEnt);
   auto t = scene.Get<TransformComponent>(newEnt);
   logger.info("TransformComponent position of newEnt: {}",
@@ -128,12 +128,12 @@ int main {
 int main {
   auto logger = getMultiSinkLogger();
 
-  dengine::ecs::Scene scene;
-  dengine::ecs::EntityID newEnt = scene.NewEntity();
-  dengine::ecs::EntityID newEnt2 = scene.NewEntity();
+  de::ecs::Scene scene;
+  de::ecs::EntityID newEnt = scene.NewEntity();
+  de::ecs::EntityID newEnt2 = scene.NewEntity();
   logger.info("Index of newEnt2: {}", newEnt2.index);
   scene.DestroyEntity(newEnt2);
-  dengine::ecs::EntityID newEnt3 = scene.NewEntity();
+  de::ecs::EntityID newEnt3 = scene.NewEntity();
   logger.info("Index of newEnt3 should be equal to index of deleted newEnt2");
   logger.info("Index of newEnt3: {}", newEnt3.index);
 
@@ -152,14 +152,14 @@ int main {
     float rotation{2.0f};
   };
 
-  dengine::ecs::Scene scene;
-  dengine::ecs::EntityID newEnt = scene.NewEntity();
+  de::ecs::Scene scene;
+  de::ecs::EntityID newEnt = scene.NewEntity();
   scene.Assign<TransformComponent>(newEnt);
-  dengine::ecs::EntityID newEnt2 = scene.NewEntity();
+  de::ecs::EntityID newEnt2 = scene.NewEntity();
   scene.Assign<TransformComponent>(newEnt2);
 
-  for (dengine::ecs::EntityID ent :
-       dengine::ecs::SceneView<TransformComponent, TagIdComponent>(scene)) {
+  for (de::ecs::EntityID ent :
+       de::ecs::SceneView<TransformComponent, TagIdComponent>(scene)) {
     logger.info("TransformComponent position of ent in index{}: {}", ent.index,
                 scene.Get<TransformComponent>(ent)->position);
   }

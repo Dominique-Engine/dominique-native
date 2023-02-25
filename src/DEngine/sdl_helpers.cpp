@@ -2,7 +2,7 @@
                                   // stb_image in more places easily
 #include "sdl_helpers.h"
 
-void dengine::logSDL2renderersInfo() {
+void de::logSDL2renderersInfo() {
   auto logger = getMultiSinkLogger();
 
   auto a = SDL_GetNumRenderDrivers();
@@ -21,8 +21,8 @@ void dengine::logSDL2renderersInfo() {
 }
 
 // From https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom
-SDL_Surface* dengine::loadImgFromFile2SDLSurface(const char* filename,
-                                                 const int req_format) {
+SDL_Surface* de::loadImgFromFile2SDLSurface(const char* filename,
+                                            const int req_format) {
   int width, height, orig_format;
   unsigned char* data =
       stbi_load(filename, &width, &height, &orig_format, req_format);

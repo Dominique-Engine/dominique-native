@@ -38,6 +38,8 @@ set (CMAKE_CXX_STANDARD 17)
 
 set(DOMINIQUE_SOURCES
     "src/dengine/core.cpp"
+    "src/dengine/utils/fileLoader.cpp"
+    "src/dengine/utils/uuid.cpp"
     # "src/dengine/dx11/coreDX11.cpp"
     # "src/dengine/dx11/dx11_helpers.cpp"
     "src/dengine/openGL/coreGL.cpp"

@@ -17,21 +17,34 @@
 #include "dengine/sdl_helpers.h"
 #include "dengine/spdlog_helper.h"
 #include "dengine/utils/uuid.h"
+#include "dengine/components/scriptable.hpp"
 
 using namespace std;
 
 int main(void) {
-  dengine::DE App;
-  App.rendererType = dengine::RendererType::OpenGl;
+  de::DE App;
   App.config.title = "DEngine App";
   App.config.width = 800;
   App.config.height = 600;
 
-  dengine::logSDL2renderersInfo();
+  de::logSDL2renderersInfo();
 
-  dengine::core::Init(App);
-  dengine::core::Run(App);
-  dengine::core::Clean(App);
+  // Scene setup
+  de::ecs::Scene scene;
+
+  // Testing hooking components to update method
+  de::ecs::EntityID testUpdate = scene.NewEntity();
+
+  scene.Assign<de::components::UpdateHandler>(testUpdate);
+  auto testUpdateHandle = scene.Get<de::components::UpdateHandler>(testUpdate);
+
+  testUpdateHandle->handler = []() {
+    getMultiSinkLogger().info("From update handler");
+  };
+
+  de::core::Init(App);
+  de::core::Run(App, scene);
+  de::core::Clean(App);
 
   return 0;
 }

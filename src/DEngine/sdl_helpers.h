@@ -5,7 +5,7 @@
 #include <stb/stb_image.h>
 
 #include "spdlog_helper.h"
-namespace dengine {
+namespace de {
 
 void logSDL2renderersInfo();
 
@@ -13,6 +13,6 @@ void logSDL2renderersInfo();
 SDL_Surface* loadImgFromFile2SDLSurface(const char* filename,
                                         const int req_format = STBI_rgb_alpha);
 
-}  // namespace dengine
+}  // namespace de
 
 #endif  // DE_SDL_HELPER

@@ -1,14 +1,16 @@
 #pragma once
 #include <bitset>
 #include <vector>
-#include <dengine/utils/uuid.h>
+#include "dengine/utils/uuid.h"
 
-// Seems good to use it in here, but not fully tested
-int s_componentCounterDEngine = 0;
+// The next line should be included in some compilation unit of final app
+// If using the dominique engine that is handled on core.cpp compilation, so no
+// need to include it in any file
+// int s_componentCounterDEngine = 0;
 
 extern int s_componentCounterDEngine;
 
-namespace dengine {
+namespace de {
 // This is a namespace for the ecs system
 namespace ecs {
 
@@ -20,13 +22,13 @@ int GetId() {
 }
 
 // Some typedefs to aid in reading
-const int MAX_ENTITIES =
-    32;  // WARN, TODO when this is too big SDL audio initialization crashes
+const int MAX_ENTITIES = 1000;
 const int MAX_COMPONENTS = 32;
 typedef unsigned long long EntityIndex;
+
 struct EntityID {
   EntityIndex index;
-  dengine::utils::uuids::Uuid uuid;  // needed to correctly delete
+  de::utils::uuids::Uuid uuid;  // needed to correctly delete
 };
 
 inline bool IsEntityValid(EntityID id) {
@@ -44,6 +46,16 @@ struct ComponentPool {
     pData = new char[elementSize * MAX_ENTITIES];
   }
 
+  // Copy constructor
+  ComponentPool(const ComponentPool& p1) {
+    // We'll allocate enough memory to hold MAX_ENTITIES, each with element size
+    elementSize = p1.elementSize;
+    pData = new char[elementSize * MAX_ENTITIES];
+    for (size_t i = 0; i < elementSize * MAX_ENTITIES; i++) {
+      pData[i] = p1.pData[i];
+    }
+  }
+
   ~ComponentPool() { delete[] pData; }
 
   inline void* get(size_t index) {
@@ -52,7 +64,7 @@ struct ComponentPool {
   }
 
   // Not sure why this is needed
-  ComponentPool& ComponentPool::operator=(const ComponentPool* a) {
+  ComponentPool& operator=(const ComponentPool* a) {
     pData = (*a).pData;
     elementSize = (*a).elementSize;
     return *this;
@@ -88,18 +100,18 @@ struct Scene {
     if (!freeEntities.empty()) {
       EntityIndex newIndex = freeEntities.back();
       freeEntities.pop_back();
-      EntityID newID = {newIndex, dengine::utils::uuids::GetUUID()};
+      EntityID newID = {newIndex, de::utils::uuids::GetUUID()};
       entities[newIndex].id = newID;
       return entities[newIndex].id;
     }
     entities.push_back(
-        {{entities.size(), dengine::utils::uuids::GetUUID()}, ComponentMask()});
+        {{entities.size(), de::utils::uuids::GetUUID()}, ComponentMask()});
     return entities.back().id;
   }
 
   // Destroys an entity
   void DestroyEntity(EntityID id) {
-    EntityID newID = {-1, dengine::utils::uuids::GetUUID()};
+    EntityID newID = {(EntityIndex)(-1), de::utils::uuids::GetUUID()};
     entities[id.index].id = newID;
     entities[id.index].mask.reset();
     freeEntities.push_back(id.index);
@@ -152,7 +164,8 @@ struct SceneView {
   }
 
   struct Iterator {
-    Iterator(Scene* pScene, EntityIndex index, ComponentMask mask, bool all)
+    Iterator(Scene* pScene, EntityIndex index, const ComponentMask& mask,
+             bool all)
         : pScene(pScene), index(index), mask(mask), all(all) {}
 
     EntityID operator*() const {
@@ -220,4 +233,4 @@ struct SceneView {
 };
 
 }  // namespace ecs
-}  // namespace dengine
+}  // namespace de

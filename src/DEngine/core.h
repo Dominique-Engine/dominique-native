@@ -2,11 +2,12 @@
 #define DENGINE_CORE
 
 #include <functional>
+#include "ecs/ecs.hpp"
 
 typedef struct SDL_Window SDL_Window;
 typedef void *SDL_GLContext;
 
-namespace dengine {
+namespace de {
 enum class RendererType {
   OpenGl,
   // DirectX11
@@ -32,9 +33,9 @@ namespace core {
 int Init(DE &engine);
 int Clean(DE &engine);
 void Render(DE &engine);
-void Run(DE &engine);
+void Run(DE &engine, de::ecs::Scene &scene);
 };  // namespace core
 
-}  // namespace dengine
+}  // namespace de
 
 #endif  // DENGINE_CORE

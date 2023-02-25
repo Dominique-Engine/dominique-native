@@ -6,12 +6,16 @@
 #include "openGl/coreGL.h"
 #include "sdl_helpers.h"
 #include "spdlog_helper.h"
+#include "components/scriptable.hpp"
+
+// This needs to be compiled to allow ecs module to work correctly
+int s_componentCounterDEngine = 0;
 
 // This implementations are temporal, need to avoid the overhead of using switch
 // to select different implementations, here is not a problem because this
 // functions are called only couple of times and are not performance sensitive
 // but should be avoided for more frecuent functions
-int dengine::core::Init(DE &engine) {
+int de::core::Init(DE &engine) {
   int result;
   auto logger = getMultiSinkLogger();
 
@@ -43,7 +47,7 @@ int dengine::core::Init(DE &engine) {
   return result;
 }
 
-int dengine::core::Clean(DE &engine) {
+int de::core::Clean(DE &engine) {
   switch (engine.rendererType) {
     // case RendererType::DirectX11:
     //   return CleanDX11(engine);
@@ -56,7 +60,7 @@ int dengine::core::Clean(DE &engine) {
   }
 }
 
-void dengine::core::Render(DE &engine) {
+void de::core::Render(DE &engine) {
   // switch (engine.rendererType)
   // {
   //     case RendererType::DirectX11 :
@@ -73,7 +77,7 @@ void dengine::core::Render(DE &engine) {
   // }
 }
 
-void dengine::core::Run(DE &engine) {
+void de::core::Run(DE &engine, de::ecs::Scene &scene) {
   std::function<void(DE & engine)> renderer;
 
   switch (engine.rendererType) {
@@ -81,7 +85,7 @@ void dengine::core::Run(DE &engine) {
     //   renderer = SetupRendererDX11(engine);
     //   break;
     case RendererType::OpenGl:
-      renderer = SetupRendererGL(engine);
+      renderer = SetupRendererGL(engine, scene);
       break;
     default:
       break;
@@ -94,6 +98,10 @@ void dengine::core::Run(DE &engine) {
       if (event.type == SDL_QUIT) {
         quit = true;
       }
+    }
+    for (de::ecs::EntityID ent :
+         de::ecs::SceneView<de::components::UpdateHandler>(scene)) {
+      scene.Get<de::components::UpdateHandler>(ent)->handler();
     }
     renderer(engine);
   }

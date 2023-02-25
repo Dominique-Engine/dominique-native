@@ -3,11 +3,11 @@
 
 #include <glm/glm.hpp>
 
-namespace dengine {
+namespace de {
 struct vertex {
   glm::vec3 pos;
 };
 
-}  // namespace dengine
+}  // namespace de
 
 #endif  // DENGINE_GRAPHICS

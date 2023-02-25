@@ -1,11 +1,12 @@
 // #include "coreGL.h"
 #include "renderer/renderer.h"
-#include "shaders.h"
 
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
 #include <SDL2/SDL_opengl.h>
+
 #include <dengine/spdlog_helper.h>
+#include <dengine/utils/fileLoader.h>
 
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
                                 GLenum severity, GLsizei length,
@@ -17,7 +18,7 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
   logger.error("GL CALLBACK: message = {}", message);
 }
 
-int dengine::core::InitGL(DE &engine) {
+int de::core::InitGL(DE &engine) {
   auto logger = getMultiSinkLogger();
 
   // initialize SDL
@@ -84,21 +85,18 @@ int dengine::core::InitGL(DE &engine) {
   return 0;
 }
 
-void dengine::core::RenderGL(
-    DE &engine, const std::vector<dengine::core::RenderDataGL> &data) {
+void de::core::RenderGL(DE &engine,
+                        const std::vector<de::core::RenderDataGL> &data) {
   glClear(GL_COLOR_BUFFER_BIT);
 
   for (auto item : data) {
-    DrawPrimitive(item.vaoID, item.vboID, item.shader);
+    DrawPrimitive(item);
   }
-
   SDL_GL_SwapWindow(engine.windowHandler);
 }
 
-int dengine::core::CleanGL(DE &engine) {
-  auto logger = getMultiSinkLogger();
-
-  logger.info("Cleaning engine");
+int de::core::CleanGL(DE &engine) {
+  getMultiSinkLogger().info("Cleaning engine");
 
   SDL_GL_DeleteContext(engine.glContext);
   SDL_DestroyWindow(engine.windowHandler);
@@ -107,7 +105,8 @@ int dengine::core::CleanGL(DE &engine) {
   return 0;
 }
 
-std::function<void(dengine::DE &)> dengine::core::SetupRendererGL(DE &engine) {
+std::function<void(de::DE &)> de::core::SetupRendererGL(DE &engine,
+                                                        de::ecs::Scene &scene) {
   glClear(GL_COLOR_BUFFER_BIT);
 
   std::vector<RenderDataGL> data;
@@ -115,15 +114,48 @@ std::function<void(dengine::DE &)> dengine::core::SetupRendererGL(DE &engine) {
 
   // TESTING
   std::vector<float> vertices = {
-      -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f,
+      // positions
+      // colors
+      // texture coords
+      0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+      0.0f,  1.0f,  1.0f,  // top right
+      0.5f,  -0.5f, 0.0f, 0.0f, 1.0f,
+      0.0f,  1.0f,  0.0f,  // bottom right
+      -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+      1.0f,  0.0f,  0.0f,  // bottom left
+      -0.5f, 0.5f,  0.0f, 1.0f, 1.0f,
+      0.0f,  0.0f,  1.0f
+      // top left
+  };
+  std::vector<unsigned int> indices = {
+      // note that we start from 0!
+      0, 1,
+      2,  // first triangle
+      2, 3,
+      0
+      // second triangle
   };
 
-  FillGeometryBuffers(vertices, data[0].vaoID, data[0].vboID);
+  data[0].vertexNumber = indices.size();
+  data[0].textures.resize(3);
+  FillGeometryBuffers(vertices, indices, data[0].vaoID, data[0].vboID,
+                      data[0].eboID);
 
-  CreateShader(&data[0].shader, vertexShaderSource, fragmentShaderSource);
+  LoadTexture("icon.png", data[0].textures[0]);
+  LoadTexture("lava.png", data[0].textures[1]);
 
-  auto renderer = [=](dengine::DE &engine) {
-    return dengine::core::RenderGL(engine, data);
+  std::string vertexShaderSource;
+  std::string fragmentShaderSource;
+  de::utils::LoadFileToString("baseFragment.glsl", fragmentShaderSource);
+  de::utils::LoadFileToString("baseVertex.glsl", vertexShaderSource);
+  CreateShader(&data[0].shader, vertexShaderSource.c_str(),
+               fragmentShaderSource.c_str());
+
+  // Wireframe
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+  auto renderer = [data](de::DE &engine) {
+    return de::core::RenderGL(engine, data);
   };
   return renderer;
 }
