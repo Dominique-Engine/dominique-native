@@ -8,7 +8,9 @@
 #include <dengine/spdlog_helper.h>
 #include <dengine/utils/fileLoader.h>
 
-void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
+using namespace de::components;
+
+void GLAPIENTRY MessageCallback(GLenum source, GLenum type, DEuint id,
                                 GLenum severity, GLsizei length,
                                 const GLchar *message, const void *userParam) {
   auto logger = getMultiSinkLogger();

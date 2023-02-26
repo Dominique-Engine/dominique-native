@@ -1,23 +1,26 @@
 #include <dengine/core.h>
 #include <vector>
 #include <functional>
+#include "dengine/components/types.hpp"
 
 namespace de {
 namespace core {
-typedef unsigned int GLuint;
+
+using namespace de::components;
+
 // OpenGL related
 struct Shader {
-  GLuint shaderProgram;
-  GLuint vertexShader;
-  GLuint fragmentShader;
+  DEuint shaderProgram;
+  DEuint vertexShader;
+  DEuint fragmentShader;
 };
 
 struct RenderDataGL {
   Shader shader;
-  GLuint vaoID;  // Vertex Array Object
-  GLuint eboID;  // Element Array Object
-  GLuint vboID;  // Vertex Buffer Object
-  std::vector<GLuint> textures;
+  DEuint vaoID;  // Vertex Array Object
+  DEuint eboID;  // Element Array Object
+  DEuint vboID;  // Vertex Buffer Object
+  std::vector<DEuint> textures;
   int vertexNumber;
 };
 

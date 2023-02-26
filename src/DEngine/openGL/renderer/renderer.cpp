@@ -26,8 +26,8 @@ void de::core::DrawPrimitive(RenderDataGL &data) {
 
 void de::core::FillGeometryBuffers(std::vector<float> &vertices,
                                    std::vector<unsigned int> &indices,
-                                   GLuint &vaoID, GLuint &vboID,
-                                   GLuint &eboID) {
+                                   DEuint &vaoID, DEuint &vboID,
+                                   DEuint &eboID) {
   glGenVertexArrays(1, &vaoID);  // Create our Vertex Array Object
   glBindVertexArray(vaoID);  // Bind our Vertex Array Object so we can use it
   // Vertex buffer object
@@ -115,7 +115,7 @@ void de::core::SetShaderUniformFloat(Shader *shader, const std::string &name,
   glUniform1f(glGetUniformLocation(shader->shaderProgram, name.c_str()), value);
 }
 
-void de::core::LoadTexture(std::string path, GLuint &textureId,
+void de::core::LoadTexture(std::string path, DEuint &textureId,
                            FilterType filterType) {
   int width, height, nrChannels;
   stbi_set_flip_vertically_on_load(true);
