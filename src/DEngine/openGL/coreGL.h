@@ -3,6 +3,10 @@
 #include <functional>
 #include "dengine/components/types.hpp"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 namespace de {
 namespace core {
 
@@ -22,6 +26,7 @@ struct RenderDataGL {
   DEuint vboID;  // Vertex Buffer Object
   std::vector<DEuint> textures;
   int vertexNumber;
+  glm::mat4 trans{1.0f};
 };
 
 enum class FilterType {

@@ -19,6 +19,9 @@ void de::core::DrawPrimitive(RenderDataGL &data) {
     glBindTexture(GL_TEXTURE_2D, data.textures[i]);
     SetShaderUniformInt(&data.shader, "texture" + std::to_string(i), i);
   }
+  unsigned int transformLoc =
+      glGetUniformLocation(data.shader.shaderProgram, "transform");
+  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(data.trans));
 
   glDrawElements(GL_TRIANGLES, data.vertexNumber, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);  // Unbind our Vertex Array Object

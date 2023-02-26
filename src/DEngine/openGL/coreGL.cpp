@@ -92,6 +92,10 @@ void de::core::RenderGL(DE &engine,
   glClear(GL_COLOR_BUFFER_BIT);
 
   for (auto item : data) {
+    item.trans = glm::translate(item.trans, glm::vec3(0.5f, -0.5f, 0.0f));
+    item.trans = glm::rotate(item.trans, (float)SDL_GetTicks() / 1000,
+                             glm::vec3(0.0f, 0.0f, 1.0f));
+
     DrawPrimitive(item);
   }
   SDL_GL_SwapWindow(engine.windowHandler);
@@ -145,6 +149,10 @@ std::function<void(de::DE &)> de::core::SetupRendererGL(DE &engine,
 
   LoadTexture("icon.png", data[0].textures[0]);
   LoadTexture("lava.png", data[0].textures[1]);
+
+  data[0].trans =
+      glm::rotate(data[0].trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+  data[0].trans = glm::scale(data[0].trans, glm::vec3(0.5, 0.5, 0.5));
 
   std::string vertexShaderSource;
   std::string fragmentShaderSource;
