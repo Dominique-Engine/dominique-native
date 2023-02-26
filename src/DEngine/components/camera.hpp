@@ -6,11 +6,11 @@ namespace de {
 namespace components {
 
 // WIP
-struct camera {
+struct Camera {
   // View
-  Vec3 eye;
-  Vec3 target;
-  Vec3 up;
+  Vec3 eye{0.0f, -3.0f, -3.0f};
+  Vec3 target{0.0f, 0.0f, 0.0f};
+  Vec3 up{0.0f, 0.0f, 0.0f};
 
   // Projection
   float fov = 45.0f;

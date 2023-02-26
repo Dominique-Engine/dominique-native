@@ -7,7 +7,7 @@ namespace core {
 
 using namespace de::components;
 
-void DrawPrimitive(RenderDataGL &data);
+void DrawPrimitive(RenderDataGL &data, RenderTargetGL &target);
 void FillGeometryBuffers(std::vector<float> &vertices,
                          std::vector<unsigned int> &indices, DEuint &vaoID,
                          DEuint &vboID, DEuint &eboID);

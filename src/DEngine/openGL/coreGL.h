@@ -29,6 +29,12 @@ struct RenderDataGL {
   glm::mat4 trans{1.0f};
 };
 
+struct RenderTargetGL {
+  glm::mat4 model{1.0f};
+  glm::mat4 projection{1.0f};
+  glm::mat4 view{1.0f};
+};
+
 enum class FilterType {
   Lineal,
   Point,
@@ -36,8 +42,11 @@ enum class FilterType {
 
 int InitGL(DE &engine);
 int CleanGL(DE &engine);
-void RenderGL(DE &engine, const std::vector<RenderDataGL> &data);
-std::function<void(DE &)> SetupRendererGL(DE &engine, de::ecs::Scene &scene);
+void RenderGL(DE &engine, de::ecs::Scene &scene,
+              de::core::RenderTargetGL &target,
+              const std::vector<de::core::RenderDataGL> &data);
+std::function<void(de::DE &, de::ecs::Scene &, de::core::RenderTargetGL &)>
+SetupRendererGL(DE &engine, de::ecs::Scene &scene);
 
 }  // namespace core
 }  // namespace de

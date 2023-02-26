@@ -24,8 +24,8 @@ struct DEConfig {
 struct DE {
   RendererType rendererType = RendererType::OpenGl;
   SDL_Window *windowHandler = nullptr;
-  SDL_GLContext glContext;
-  DEConfig config = {0.03f, 0.69f, 0.48f, 0.0f};
+  SDL_GLContext glContext = nullptr;
+  DEConfig config = {0.03f, 0.69f, 0.48f, 0.0f, "DEngine App", 800, 600};
 };
 
 namespace core {

@@ -1,12 +1,15 @@
 #include "core.h"
 
 #include <SDL2/SDL.h>
+#include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 // #include "dx11/coreDX11.h"
 #include "openGl/coreGL.h"
 #include "sdl_helpers.h"
 #include "spdlog_helper.h"
 #include "components/scriptable.hpp"
+#include "components/camera.hpp"
 
 // This needs to be compiled to allow ecs module to work correctly
 int s_componentCounterDEngine = 0;
@@ -78,7 +81,9 @@ void de::core::Render(DE &engine) {
 }
 
 void de::core::Run(DE &engine, de::ecs::Scene &scene) {
-  std::function<void(DE & engine)> renderer;
+  std::function<void(de::DE & engine, de::ecs::Scene & scene,
+                     de::core::RenderTargetGL & target)>
+      renderer;
 
   switch (engine.rendererType) {
     // case RendererType::DirectX11:
@@ -91,6 +96,20 @@ void de::core::Run(DE &engine, de::ecs::Scene &scene) {
       break;
   }
 
+  de::core::RenderTargetGL renderTarget;
+  for (de::ecs::EntityID ent :
+       de::ecs::SceneView<de::components::Camera>(scene)) {
+    auto camera = scene.Get<de::components::Camera>(ent);
+    renderTarget.model = glm::rotate(renderTarget.model, glm::radians(-55.0f),
+                                     glm::vec3(1.0f, 0.0f, 0.0f));
+    int w, h;
+    SDL_GetWindowSize(engine.windowHandler, &w, &h);
+    renderTarget.view =
+        glm::translate(renderTarget.view, glm::vec3(0.0f, 0.0f, -3.0f));
+    renderTarget.projection = glm::perspective<float>(
+        glm::radians(camera->fov), w / h, camera->near, camera->far);
+  }
+
   SDL_Event event;
   bool quit = false;
   while (!quit) {
@@ -99,10 +118,19 @@ void de::core::Run(DE &engine, de::ecs::Scene &scene) {
         quit = true;
       }
     }
+
     for (de::ecs::EntityID ent :
          de::ecs::SceneView<de::components::UpdateHandler>(scene)) {
       scene.Get<de::components::UpdateHandler>(ent)->handler();
     }
-    renderer(engine);
+
+    // Handling camera
+    for (de::ecs::EntityID ent :
+         de::ecs::SceneView<de::components::Camera>(scene)) {
+      auto camera = scene.Get<de::components::Camera>(ent);
+      // TODO
+    }
+
+    renderer(engine, scene, renderTarget);
   }
 }

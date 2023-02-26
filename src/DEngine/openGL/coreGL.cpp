@@ -87,7 +87,8 @@ int de::core::InitGL(DE &engine) {
   return 0;
 }
 
-void de::core::RenderGL(DE &engine,
+void de::core::RenderGL(DE &engine, de::ecs::Scene &scene,
+                        de::core::RenderTargetGL &target,
                         const std::vector<de::core::RenderDataGL> &data) {
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -96,7 +97,7 @@ void de::core::RenderGL(DE &engine,
     item.trans = glm::rotate(item.trans, (float)SDL_GetTicks() / 1000,
                              glm::vec3(0.0f, 0.0f, 1.0f));
 
-    DrawPrimitive(item);
+    DrawPrimitive(item, target);
   }
   SDL_GL_SwapWindow(engine.windowHandler);
 }
@@ -111,8 +112,8 @@ int de::core::CleanGL(DE &engine) {
   return 0;
 }
 
-std::function<void(de::DE &)> de::core::SetupRendererGL(DE &engine,
-                                                        de::ecs::Scene &scene) {
+std::function<void(de::DE &, de::ecs::Scene &, de::core::RenderTargetGL &)>
+de::core::SetupRendererGL(DE &engine, de::ecs::Scene &scene) {
   glClear(GL_COLOR_BUFFER_BIT);
 
   std::vector<RenderDataGL> data;
@@ -164,8 +165,12 @@ std::function<void(de::DE &)> de::core::SetupRendererGL(DE &engine,
   // Wireframe
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  auto renderer = [data](de::DE &engine) {
-    return de::core::RenderGL(engine, data);
+  // auto renderer = [data](de::DE &engine) {
+  //   return de::core::RenderGL(engine, data);
+  // };
+  auto renderer = [data](de::DE &engine, de::ecs::Scene &scene,
+                         de::core::RenderTargetGL &target) {
+    return de::core::RenderGL(engine, scene, target, data);
   };
   return renderer;
 }

@@ -4,6 +4,9 @@ layout (location = 1) in vec3 aColor; // color has attribute position 1
 layout (location = 2) in vec2 aTexCoord;
 
 uniform mat4 transform;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
 out vec4 vertexColor;
 out vec2 TexCoord;
@@ -11,7 +14,7 @@ out vec2 TexCoord;
 void main()
 {
   // gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-  gl_Position = transform * vec4(aPos, 1.0); // we give a vec3 to vec4’s constructor
+  gl_Position = projection * view * model * transform * vec4(aPos, 1.0); // we give a vec3 to vec4’s constructor
   vertexColor = vec4(aColor, 1.0); // output variable to dark-red
   TexCoord = aTexCoord;
 }

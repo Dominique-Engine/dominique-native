@@ -10,7 +10,7 @@ std::map<de::core::FilterType, int> filterTypeToGLFilter{
     {de::core::FilterType::Lineal, GL_LINEAR},
     {de::core::FilterType::Point, GL_NEAREST}};
 
-void de::core::DrawPrimitive(RenderDataGL &data) {
+void de::core::DrawPrimitive(RenderDataGL &data, RenderTargetGL &target) {
   glUseProgram(data.shader.shaderProgram);
   glBindVertexArray(data.vaoID);
 
@@ -22,6 +22,17 @@ void de::core::DrawPrimitive(RenderDataGL &data) {
   unsigned int transformLoc =
       glGetUniformLocation(data.shader.shaderProgram, "transform");
   glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(data.trans));
+
+  // Camera related logic
+  unsigned int viewLoc =
+      glGetUniformLocation(data.shader.shaderProgram, "view");
+  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(target.view));
+  unsigned int modelLoc =
+      glGetUniformLocation(data.shader.shaderProgram, "model");
+  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(target.model));
+  unsigned int projLoc =
+      glGetUniformLocation(data.shader.shaderProgram, "projection");
+  glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(target.projection));
 
   glDrawElements(GL_TRIANGLES, data.vertexNumber, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);  // Unbind our Vertex Array Object
