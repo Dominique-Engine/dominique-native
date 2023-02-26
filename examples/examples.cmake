@@ -23,9 +23,11 @@ set_target_properties(DEexample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${EXAMPLES_F
 ### Add some usable files to examples folder
 set (ExamplesRequiredExtras
         "res/icon.png"
+        "res/WaterBottle.gltf"
         "res/shaders/baseFragment.glsl"
         "res/shaders/baseVertex.glsl"
         "res/textures/lava.png"
+        "res/models/Prop_Tree_Palm_3.obj"
 )
 
 get_target_property(EXAMPLES_BINARY_EXECUTABLE_OUTPUT DEexample RUNTIME_OUTPUT_DIRECTORY)

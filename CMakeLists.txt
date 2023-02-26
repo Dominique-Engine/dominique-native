@@ -46,6 +46,9 @@ set(DOMINIQUE_SOURCES
     "src/dengine/openGL/renderer/renderer.cpp"
     "src/dengine/spdlog_helper.cpp"
     "src/dengine/sdl_helpers.cpp"
+
+    "3rdParty/cgltf/cgltf.cpp"
+    "3rdParty/tinyobjloader/tiny_obj_loader.cc"
 )
 
 add_library(dominique_static STATIC

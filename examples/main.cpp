@@ -18,29 +18,28 @@
 #include "dengine/spdlog_helper.h"
 #include "dengine/utils/uuid.h"
 #include "dengine/components/scriptable.hpp"
+#include "dengine/components/camera.hpp"
+#include "dengine/utils/fileLoader.h"
+#include <glm/glm.hpp>
 
 using namespace std;
 
 int main(void) {
   de::DE App;
-  App.config.title = "DEngine App";
-  App.config.width = 800;
-  App.config.height = 600;
 
   de::logSDL2renderersInfo();
 
   // Scene setup
   de::ecs::Scene scene;
 
-  // Testing hooking components to update method
-  de::ecs::EntityID testUpdate = scene.NewEntity();
+  // Testing camera setup
+  de::ecs::EntityID camera = scene.NewEntity();
+  scene.Assign<de::components::Camera>(camera);
+  auto cameraComponent = scene.Get<de::components::Camera>(camera);
 
-  scene.Assign<de::components::UpdateHandler>(testUpdate);
-  auto testUpdateHandle = scene.Get<de::components::UpdateHandler>(testUpdate);
-
-  testUpdateHandle->handler = []() {
-    getMultiSinkLogger().info("From update handler");
-  };
+  getMultiSinkLogger().info("Loading gltf");
+  de::utils::LoadGLTF("WaterBottle.gltf");
+  de::utils::LoadObj("Prop_Tree_Palm_3.obj");
 
   de::core::Init(App);
   de::core::Run(App, scene);

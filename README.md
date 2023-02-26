@@ -168,6 +168,32 @@ int main {
 }
 ```
 
+## Components
+### UpdateHandler
+Holds a function that will be called on each iteration of game loop
+``` cpp
+#include "dengine/ecs/ecs.hpp"
+#include "dengine/components/scriptable.hpp"
+
+int main {
+  auto logger = getMultiSinkLogger();
+  de::ecs::EntityID testUpdate = scene.NewEntity();
+
+  scene.Assign<de::components::UpdateHandler>(testUpdate);
+  auto testUpdateHandle = scene.Get<de::components::UpdateHandler>(testUpdate);
+
+  testUpdateHandle->handler = []() {
+    getMultiSinkLogger().info("From update handler");
+  };
+
+  de::DE App;
+  de::core::Init(App);
+  de::core::Run(App, scene);
+  de::core::Clean(App);
+
+  return 0;
+}
+```
 ## Webgraphy
 - style guide: [google](https://google.github.io/styleguide/cppguide.html)
 - ecs: [this blog](https://www.david-colson.com/2020/02/09/making-a-simple-ecs.html)
