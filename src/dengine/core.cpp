@@ -5,7 +5,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 // #include "dx11/coreDX11.h"
-#include "openGl/coreGL.h"
+#include "openGL/coreGL.h"
 #include "sdl_helpers.h"
 #include "spdlog_helper.h"
 #include "components/scriptable.hpp"

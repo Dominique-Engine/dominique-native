@@ -11,7 +11,6 @@
 extern int s_componentCounterDEngine;
 
 namespace de {
-// This is a namespace for the ecs system
 namespace ecs {
 
 // This function will return a unique ID for each component type
@@ -21,9 +20,9 @@ int GetId() {
   return s_componentId;
 }
 
-// Some typedefs to aid in reading
 const int MAX_ENTITIES = 1000;
 const int MAX_COMPONENTS = 32;
+// Some typedefs to aid in reading
 typedef unsigned long long EntityIndex;
 
 struct EntityID {

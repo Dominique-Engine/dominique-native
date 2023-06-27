@@ -15,7 +15,7 @@ enum class RendererType {
 
 struct DEConfig {
   float clearColor[4];
-  char *title;
+  const char *title;
   int width;
   int height;
   int flags;

@@ -27,7 +27,7 @@ set (ExamplesRequiredExtras
         "res/shaders/baseFragment.glsl"
         "res/shaders/baseVertex.glsl"
         "res/textures/lava.png"
-        "res/models/Prop_Tree_Palm_3.obj"
+        # "res/models/Prop_Tree_Palm_3.obj"
 )
 
 get_target_property(EXAMPLES_BINARY_EXECUTABLE_OUTPUT DEexample RUNTIME_OUTPUT_DIRECTORY)

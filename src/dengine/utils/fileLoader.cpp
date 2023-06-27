@@ -21,7 +21,7 @@ bool de::utils::LoadFileToString(const std::string& path,
 
 // Loads file content to a string
 bool de::utils::LoadGLTF(const std::string& path) {
-  cgltf_options options = {0};
+  cgltf_options options = {};
   cgltf_data* data = NULL;
   cgltf_result result = cgltf_parse_file(&options, path.c_str(), &data);
   if (result == cgltf_result_success) {
