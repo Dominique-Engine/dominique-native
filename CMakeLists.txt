@@ -10,10 +10,8 @@ add_definitions( -DAPP_NAME="${PROJECT_NAME}")
 add_definitions( -DSDL_MAIN_HANDLED )#fix use of SDL, not fully tested on all platforms compilers, just on windows with MSVC and mingw
 
 #set(CMAKE_VERBOSE_MAKEFILE ON)
-set(DENGINE_SHARED      off CACHE BOOL "Build shared library") 
-set(DENGINE_EXAMPLES    on CACHE BOOL "Build examples") 
-set(DENGINE_DIRECTX11   off CACHE BOOL "Build with directx11 support") 
-set(DENGINE_OPENGL      on CACHE BOOL "Build with opengl support") 
+set(DENGINE_SHARED      off CACHE BOOL "Build shared library")
+set(DENGINE_EXAMPLES    on CACHE BOOL "Build examples")
 
 set(DX11_LINK_OPTIONS "")
 set(GL_LINK_OPTIONS "")
@@ -40,8 +38,6 @@ set(DOMINIQUE_SOURCES
     "src/dengine/core.cpp"
     "src/dengine/utils/fileLoader.cpp"
     "src/dengine/utils/uuid.cpp"
-    # "src/dengine/dx11/coreDX11.cpp"
-    # "src/dengine/dx11/dx11_helpers.cpp"
     "src/dengine/openGL/coreGL.cpp"
     "src/dengine/openGL/renderer/renderer.cpp"
     "src/dengine/spdlog_helper.cpp"
@@ -63,9 +59,9 @@ if(DENGINE_SHARED)
 endif(DENGINE_SHARED)
 
 include_directories("3rdParty")
+include_directories("src")
 
 include_directories(${COLLECTOR_BASE_INSTALL_PREFIX}/SRCONLY/_glm.git)
-include_directories("src")
 
 set(GLAD_INSTALL ON)
 set(DIRECTX OFF)
@@ -77,29 +73,21 @@ collect_src(    "https://github.com/g-truc/glm.git"            "0.9.9.8"        
 collect_and_find( spdlog "https://github.com/gabime/spdlog"            "v1.8.5"    dominique_static )
 collect_and_find( SDL2 "https://github.com/libsdl-org/SDL"      "release-2.0.14"   dominique_static )
 
-
-if(DENGINE_OPENGL)
-    set(GL_LINK_OPTIONS glad)
-endif(DENGINE_OPENGL)
-
-if(DENGINE_DIRECTX11)
-    set(DX11_LINK_OPTIONS d3d11 dxgi d3dcompiler)
-endif(DENGINE_DIRECTX11)
+set(GL_LINK_OPTIONS glad)
 
 if(${SDL2_FOUND})
-    if (WIN32)       #Windows settings
-        if(DENGINE_SHARED)
-            #target_link_libraries (dominique PRIVATE SDL2::SDL2main SDL2::SDL2 glad spdlog::spdlog d3d11 dxgi d3dcompiler shell32)#for sdl_opengl3 by find package
-            target_link_libraries (dominique PRIVATE SDL2::SDL2main SDL2::SDL2 ${GL_LINK_OPTIONS} spdlog::spdlog ${DX11_LINK_OPTIONS} shell32)#for sdl_opengl3 by find package
-        endif(DENGINE_SHARED)
-
+    if (WIN32)
         target_link_libraries (dominique_static PRIVATE SDL2::SDL2main SDL2::SDL2-static ${GL_LINK_OPTIONS} spdlog::spdlog ${DX11_LINK_OPTIONS} shell32)#for sdl_opengl3 by find package
-    elseif(UNIX AND NOT APPLE)#for linux only
-        if(DENGINE_SHARED)
-            target_link_libraries (dominique PRIVATE SDL2 ${CMAKE_DL_LIBS} glad spdlog::spdlog)#for sdl_opengl3 by find package
-        endif(DENGINE_SHARED)
-
+    elseif(UNIX AND NOT APPLE)
         target_link_libraries (dominique_static PRIVATE SDL2 ${CMAKE_DL_LIBS} glad spdlog::spdlog)#for sdl_opengl3 by find package
+    endif ()
+endif()
+
+if(DENGINE_SHARED AND ${SDL2_FOUND})
+    if (WIN32)
+        target_link_libraries (dominique PRIVATE SDL2::SDL2main SDL2::SDL2 ${GL_LINK_OPTIONS} spdlog::spdlog ${DX11_LINK_OPTIONS} shell32)#for sdl_opengl3 by find package
+    elseif(UNIX AND NOT APPLE)
+        target_link_libraries (dominique PRIVATE SDL2 ${CMAKE_DL_LIBS} glad spdlog::spdlog)#for sdl_opengl3 by find package
     endif ()
 endif()
 
