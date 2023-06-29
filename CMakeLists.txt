@@ -61,13 +61,13 @@ endif(DENGINE_SHARED)
 include_directories("3rdParty")
 include_directories("src")
 
-include_directories(${COLLECTOR_BASE_INSTALL_PREFIX}/SRCONLY/_glm.git)
-
 set(GLAD_INSTALL ON)
 set(DIRECTX OFF)
 append_var_to_cmake_args(DIRECTX)
 append_var_to_cmake_args(GLAD_INSTALL)
 collect(        "https://github.com/Dav1dde/glad"              "v0.1.34"           dominique_static )
+collect(        "https://github.com/PotatoBite/xgetopt"        "v1.0.0"            dominique_static )
+collect(        "https://github.com/ThePhD/sol2"               "v3.2.2"            dominique_static )
 collect_src(    "https://github.com/g-truc/glm.git"            "0.9.9.8"           dominique_static )
 
 collect_and_find( spdlog "https://github.com/gabime/spdlog"            "v1.8.5"    dominique_static )

@@ -7,11 +7,10 @@ add_executable(DEexample ${GUI_TYPE}
     "examples/main.cpp"
 )
 
+target_include_directories(  DEexample PRIVATE ${COLLECTOR_BASE_INSTALL_PREFIX}/SRCONLY/_glm.git)
 
 target_include_directories ( DEexample PRIVATE ${COLLECTOR_BASE_INSTALL_PREFIX}/include )#All collections should be installed in this path if used collect_together
 target_link_directories    ( DEexample PRIVATE ${COLLECTOR_BASE_INSTALL_PREFIX}/lib)#All collections should be installed in this path if used collect_together
-
-target_include_directories ( DEexample PRIVATE "src")
 
 add_dependencies( DEexample dominique_static)
 
