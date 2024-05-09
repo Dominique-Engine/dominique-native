@@ -2,10 +2,28 @@
 
 Personal attempt to learn graphics and general game and game engine programming. Really slow paced.
 
-Some things are really basic or plain not ISO compliant, but are just there to get some other things working and are waiting for a drop-in replacement.
+Some things are really basic or plain not ISO compliant, but are just there to get some other things working and are
+waiting for a drop-in replacement.
+
 
 ![Dominique engine latest example](./images/1.png "a title")
+
+## How to run
+
+```bash
+cmake -B build -S .
+```
+
+```bash
+cmake --build build
+```
+
+```bash
+./build/examples/DEexample
+```
+
 ## Goals
+
 - ~~Directx~~ and opengl support
 - Data oriented design from the ground up
 - Modern c++
@@ -16,6 +34,7 @@ Some things are really basic or plain not ISO compliant, but are just there to g
 - JUST LEARN ALL THE STUFF
 
 ## Roadman:
+
 - [x] Uuid module
 - [x] Entity component system
 - [ ] 3d ~~directx~~ and opengl performant renderer
@@ -25,6 +44,7 @@ Some things are really basic or plain not ISO compliant, but are just there to g
 - [ ] 3d audio
 
 ## Stack
+
 - c++ 11
 - SDL2
 - ~~Directx11~~
@@ -38,15 +58,22 @@ Some things are really basic or plain not ISO compliant, but are just there to g
 
 - Python: for GLAD generation
 - :warning: ~~Vulkan SDK~~: to use vulkan during rendering, if not present need to be disabled in cmake
-- :warning: ~~Directx SDK~~: to use directx during rendering, if not present need to be disabled in cmake(and some kind of disabling for complie sdl without directx support, it appears sdl on windows tries to compile to use directx by default)
+- :warning: ~~Directx SDK~~: to use directx during rendering, if not present need to be disabled in cmake(and some kind
+  of disabling for complie sdl without directx support, it appears sdl on windows tries to compile to use directx by
+  default)
 
 ## Issues
 
-Because a little hack to allow the use of cmake's `find_package()` and `ExternalProjecAdd()`(the hack is inside custom `collector` cmake module) the app should compile easily with clang, gcc or mingw, but with msvc if the SDL2 package is missing, the first build installs it along other dependencies and the build needs to be triggered a second time for the main app to be able to find deps and link correctly, cause the first try fails. If SDL2 is present from the beginning nothing happens, but i recommend install it from source(that is handled by the project itself).
+Because a little hack to allow the use of cmake's `find_package()` and `ExternalProjecAdd()`(the hack is inside
+custom `collector` cmake module) the app should compile easily with clang, gcc or mingw, but with msvc if the SDL2
+package is missing, the first build installs it along other dependencies and the build needs to be triggered a second
+time for the main app to be able to find deps and link correctly, cause the first try fails. If SDL2 is present from the
+beginning nothing happens, but i recommend install it from source(that is handled by the project itself).
 
 ## Modules
 
 ### core engine
+
 This module is the core of the engine, it is a very basic abstraction of the window and the renderer.
 
 ``` c++
@@ -70,7 +97,9 @@ int main() {
 ```
 
 ### uuid
-This module needs a lot of study and improvements, is based on some code from boost library, online research and very little knoledge of uuid standard. The good news, it seems to work right now at least to get things going.
+
+This module needs a lot of study and improvements, is based on some code from boost library, online research and very
+little knoledge of uuid standard. The good news, it seems to work right now at least to get things going.
 
 ``` c++
 #include "dengine/utils/uuid.h"
@@ -88,6 +117,7 @@ int main {
 ```
 
 ### ecs
+
 This module is a very basic entity component system, maybe it is not very performant.
 
 ``` c++
@@ -169,8 +199,11 @@ int main {
 ```
 
 ## Components
+
 ### UpdateHandler
+
 Holds a function that will be called on each iteration of game loop
+
 ``` cpp
 #include "dengine/ecs/ecs.hpp"
 #include "dengine/components/scriptable.hpp"
@@ -194,7 +227,10 @@ int main {
   return 0;
 }
 ```
+
 ## Webgraphy
+
 - style guide: [google](https://google.github.io/styleguide/cppguide.html)
 - ecs: [this blog](https://www.david-colson.com/2020/02/09/making-a-simple-ecs.html)
-- uuid: [this header](https://www.boost.org/doc/libs/1_81_0/boost/uuid/uuid.hpp), [this blog](https://lowrey.me/guid-generation-in-c-11/), the good old wikipedia
+- uuid: [this header](https://www.boost.org/doc/libs/1_81_0/boost/uuid/uuid.hpp), [this blog](https://lowrey.me/guid-generation-in-c-11/),
+the good old wikipedia

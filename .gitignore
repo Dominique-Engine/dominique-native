@@ -83,3 +83,7 @@ CMakeLists.txt.user
 #Dependencies
 collected_deps/
 collections/
+build/
+cmake-build*/
+.idea/
+logs/
