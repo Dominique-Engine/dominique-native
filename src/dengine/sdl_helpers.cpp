@@ -1,5 +1,5 @@
 #define STB_IMAGE_IMPLEMENTATION  // TODO avoid this here to be able to use
-                                  // stb_image in more places easily
+// stb_image in more places easily
 #include "sdl_helpers.h"
 
 void de::logSDL2renderersInfo() {
@@ -18,13 +18,20 @@ void de::logSDL2renderersInfo() {
           temp.num_texture_formats);
     }
   }
+  a = SDL_GetNumVideoDrivers();
+  logger.info("Number of SDL video drivers: {}, with names:", a);
+  {
+    for (short i = 0; i < a; i++) {
+      logger.info("name: {}", SDL_GetVideoDriver(i));
+    }
+  }
 }
 
 // From https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom
-SDL_Surface* de::loadImgFromFile2SDLSurface(const char* filename,
+SDL_Surface *de::loadImgFromFile2SDLSurface(const char *filename,
                                             const int req_format) {
   int width, height, orig_format;
-  unsigned char* data =
+  unsigned char *data =
       stbi_load(filename, &width, &height, &orig_format, req_format);
   if (data == nullptr) {
     return nullptr;
@@ -55,7 +62,7 @@ SDL_Surface* de::loadImgFromFile2SDLSurface(const char* filename,
     pitch = 4 * width;
   }
 
-  return SDL_CreateRGBSurfaceFrom((void*)data, width, height, depth, pitch,
+  return SDL_CreateRGBSurfaceFrom((void *) data, width, height, depth, pitch,
                                   rmask, gmask, bmask, amask);
 
   // TODO put this somewhere stbi_image_free(data); if needed
