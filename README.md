@@ -1,12 +1,12 @@
 # Dominique
 
-Personal attempt to learn graphics and general game and game engine programming. Really slow paced.
+c++ modular framework for creative coding, generative art, and dynamic visual development.
 
 Some things are really basic or plain not ISO compliant, but are just there to get some other things working and are
 waiting for a drop-in replacement.
 
 
-![Dominique engine latest example](./images/1.png "a title")
+![Dominique engine latest example](./images/2.png "a title")
 
 ## How to run
 
