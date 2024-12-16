@@ -86,8 +86,8 @@ void de::core::CreateShader(Shader *shader, const char *vertexShaderSource,
   glGetShaderiv(shader->vertexShader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(shader->vertexShader, 512, NULL, infoLog);
-    getMultiSinkLogger().error("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
-                               infoLog);
+    // getMultiSinkLogger().error("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
+    //                            infoLog);
   }
 
   // fragment shader
@@ -97,8 +97,8 @@ void de::core::CreateShader(Shader *shader, const char *vertexShaderSource,
   glGetShaderiv(shader->fragmentShader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(shader->fragmentShader, 512, NULL, infoLog);
-    getMultiSinkLogger().error("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED {}",
-                               infoLog);
+    // getMultiSinkLogger().error("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED {}",
+    //                            infoLog);
   }
 
   // shader program
@@ -109,8 +109,8 @@ void de::core::CreateShader(Shader *shader, const char *vertexShaderSource,
   glGetProgramiv(shader->shaderProgram, GL_LINK_STATUS, &success);
   if (!success) {
     glGetProgramInfoLog(shader->shaderProgram, 512, NULL, infoLog);
-    getMultiSinkLogger().error("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
-                               infoLog);
+    // getMultiSinkLogger().error("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
+    //                            infoLog);
   }
   glDeleteShader(shader->vertexShader);
   glDeleteShader(shader->fragmentShader);

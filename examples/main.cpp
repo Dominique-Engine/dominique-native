@@ -15,7 +15,7 @@
 #include "dengine/ecs/ecs.hpp"
 #include "dengine/core.h"
 #include "dengine/sdl_helpers.h"
-#include "dengine/spdlog_helper.h"
+// #include "dengine/spdlog_helper.h"
 #include "dengine/utils/uuid.h"
 #include "dengine/components/scriptable.hpp"
 #include "dengine/components/camera.hpp"
@@ -37,7 +37,7 @@ int main(void) {
   scene.Assign<de::components::Camera>(camera);
   auto cameraComponent = scene.Get<de::components::Camera>(camera);
 
-  getMultiSinkLogger().info("Loading gltf");
+  // getMultiSinkLogger().info("Loading gltf");
   de::utils::LoadGLTF("WaterBottle.gltf");
   de::utils::LoadObj("Prop_Tree_Palm_3.obj");
 

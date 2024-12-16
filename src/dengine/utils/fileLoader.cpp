@@ -9,7 +9,7 @@ bool de::utils::LoadFileToString(const std::string& path,
                                  std::string& content) {
   std::ifstream file(path.c_str());
   if (!file.is_open()) {
-    getMultiSinkLogger().error("Could not open file: {}", path);
+    // getMultiSinkLogger().error("Could not open file: {}", path);
     return false;
   }
   std::stringstream ss;

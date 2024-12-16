@@ -7,14 +7,9 @@ add_executable(DEexample ${GUI_TYPE}
         "examples/main.cpp"
 )
 
-#All collections should be installed in this path if used collect_together
-target_include_directories(DEexample PRIVATE ${COLLECTOR_BASE_INSTALL_PREFIX}/include)
-target_link_directories(DEexample PRIVATE ${COLLECTOR_BASE_INSTALL_PREFIX}/lib)
-target_include_directories(DEexample PRIVATE ${COLLECTOR_BASE_INSTALL_PREFIX}/SRCONLY/_glm.git)
-
 add_dependencies(DEexample Dominique)
 
-target_link_libraries(DEexample PRIVATE Dominique)
+target_link_libraries(DEexample PRIVATE Dominique glad)
 
 set_target_properties(DEexample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${EXAMPLES_FOLDER})
 
@@ -30,6 +25,9 @@ set(ExamplesRequiredExtras
 )
 
 get_target_property(EXAMPLES_BINARY_EXECUTABLE_OUTPUT DEexample RUNTIME_OUTPUT_DIRECTORY)
+
+find_package(glm CONFIG REQUIRED)
+find_package(glad CONFIG REQUIRED)
 
 foreach (_file ${ExamplesRequiredExtras})
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")

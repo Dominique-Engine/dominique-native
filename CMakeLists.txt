@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 project(Dominique VERSION 0.0.1)
 #set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -18,12 +18,9 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     endif ()
 endif ()
 
-
-include("collector/collector.cmake")#need to be after project()
-
-include(CTest)
-
-enable_testing()
+#include(CTest)
+#
+#enable_testing()
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -33,7 +30,7 @@ set(DOMINIQUE_SOURCES
         "src/dengine/utils/uuid.cpp"
         "src/dengine/openGL/coreGL.cpp"
         "src/dengine/openGL/renderer/renderer.cpp"
-        "src/dengine/spdlog_helper.cpp"
+        #        "src/dengine/spdlog_helper.cpp"
         "src/dengine/sdl_helpers.cpp"
         "3rdParty/cgltf/cgltf.cpp"
         "3rdParty/tinyobjloader/tiny_obj_loader.cc"
@@ -46,24 +43,21 @@ add_library(Dominique STATIC
 include_directories("3rdParty")
 include_directories("src")
 
-set(GLAD_INSTALL ON)
-set(DIRECTX OFF)
+find_package(SDL2 CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(glad CONFIG REQUIRED)
 
-append_var_to_cmake_args(DIRECTX)
-append_var_to_cmake_args(GLAD_INSTALL)
-collect("https://github.com/Dav1dde/glad" "v0.1.34" Dominique)
-collect("https://github.com/PotatoBite/xgetopt" "v1.0.0" Dominique)
-collect("https://github.com/ThePhD/sol2" "v3.2.2" Dominique)
-collect_src("https://github.com/g-truc/glm.git" "0.9.9.8" Dominique)
-
-collect_and_find(spdlog "https://github.com/gabime/spdlog" "v1.8.5" Dominique)
-collect_and_find(SDL2 "https://github.com/libsdl-org/SDL" "release-2.0.14" Dominique)
+include_directories(${SDL2_INCLUDE_DIRS})
 
 if (${SDL2_FOUND})
     if (WIN32)
         target_link_libraries(Dominique PRIVATE SDL2::SDL2main SDL2::SDL2-static glad spdlog::spdlog shell32)
     elseif (UNIX AND NOT APPLE)
         target_link_libraries(Dominique PRIVATE SDL2 SDL2::SDL2-static glad spdlog::spdlog)
+    elseif (APPLE)
+        target_link_libraries(Dominique PRIVATE $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+                $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> spdlog::spdlog)
     endif ()
 endif ()
 

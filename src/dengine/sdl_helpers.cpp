@@ -3,26 +3,26 @@
 #include "sdl_helpers.h"
 
 void de::logSDL2renderersInfo() {
-  auto logger = getMultiSinkLogger();
+  // auto logger = getMultiSinkLogger();
 
   auto a = SDL_GetNumRenderDrivers();
-  logger.info("Number of SDL devices: {}, with info:", a);
+  // logger.info("Number of SDL devices: {}, with info:", a);
   {
     SDL_RendererInfo temp;
     for (short i = 0; i < a; i++) {
       SDL_GetRenderDriverInfo(i, &temp);
-      logger.info(
-          "name: {}, max texture height: {}, max texture width: {}, num "
-          "texture formats: {}",
-          temp.name, temp.max_texture_height, temp.max_texture_width,
-          temp.num_texture_formats);
+      // logger.info(
+      //     "name: {}, max texture height: {}, max texture width: {}, num "
+      //     "texture formats: {}",
+      //     temp.name, temp.max_texture_height, temp.max_texture_width,
+      //     temp.num_texture_formats);
     }
   }
   a = SDL_GetNumVideoDrivers();
-  logger.info("Number of SDL video drivers: {}, with names:", a);
+  // logger.info("Number of SDL video drivers: {}, with names:", a);
   {
     for (short i = 0; i < a; i++) {
-      logger.info("name: {}", SDL_GetVideoDriver(i));
+      // logger.info("name: {}", SDL_GetVideoDriver(i));
     }
   }
 }

@@ -1,13 +1,14 @@
 #include "core.h"
 
 #include <SDL2/SDL.h>
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 
 // #include "dx11/coreDX11.h"
 #include "openGL/coreGL.h"
 #include "sdl_helpers.h"
-#include "spdlog_helper.h"
+// #include "spdlog_helper.h"
 #include "components/scriptable.hpp"
 #include "components/camera.hpp"
 
@@ -20,7 +21,7 @@ int s_componentCounterDEngine = 0;
 // but should be avoided for more frecuent functions
 int de::core::Init(DE &engine) {
   int result;
-  auto logger = getMultiSinkLogger();
+  // auto logger = getMultiSinkLogger();
 
   switch (engine.rendererType) {
     // case RendererType::DirectX11:
@@ -40,7 +41,9 @@ int de::core::Init(DE &engine) {
 
     // The icon is attached to the window pointer
     if (surface == nullptr)
-      logger.warn("Could not load windows icon");
+    {
+      // logger.warn("Could not load windows icon");
+    }
     else
       SDL_SetWindowIcon(engine.windowHandler, surface);
     // ...and the surface containing the icon pixel data is no longer required.

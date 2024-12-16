@@ -13,19 +13,19 @@ using namespace de::components;
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, DEuint id,
                                 GLenum severity, GLsizei length,
                                 const GLchar *message, const void *userParam) {
-  auto logger = getMultiSinkLogger();
+  // auto logger = getMultiSinkLogger();
   // TODO: use a switch to message type, error, warn, info, based on: type ==
   // GL_DEBUG_TYPE_ERROR
   // TODO: log a huan readable version of type and severity
-  logger.error("GL CALLBACK: message = {}", message);
+  // logger.error("GL CALLBACK: message = {}", message);
 }
 
 int de::core::InitGL(DE &engine) {
-  auto logger = getMultiSinkLogger();
+  // auto logger = getMultiSinkLogger();
 
   // initialize SDL
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-    logger.error("Couldn't initialize SDL: {}", SDL_GetError());
+    // logger.error("Couldn't initialize SDL: {}", SDL_GetError());
     return 1;  // sdl could not initialize
   }
   // clean up SDL
@@ -47,7 +47,7 @@ int de::core::InitGL(DE &engine) {
           SDL_WINDOW_ALLOW_HIGHDPI);
 
   if (engine.windowHandler == NULL) {
-    logger.error("Couldn't set video mode: {}", SDL_GetError());
+    // logger.error("Couldn't set video mode: {}", SDL_GetError());
     return 1;
   }
 
@@ -56,14 +56,14 @@ int de::core::InitGL(DE &engine) {
 
   // Check OpenGL properties
   if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
-    logger.error("Failed to initialize OpenGL context");
+    // logger.error("Failed to initialize OpenGL context");
     return 1;
   }
 
-  logger.info("OpenGL loaded");
-  logger.info("Vendor:   {}, Renderer: {}, Version:  {}",
-              glGetString(GL_VENDOR), glGetString(GL_RENDERER),
-              glGetString(GL_VERSION));
+  // logger.info("OpenGL loaded");
+  // logger.info("Vendor:   {}, Renderer: {}, Version:  {}",
+  //             glGetString(GL_VENDOR), glGetString(GL_RENDERER),
+  //             glGetString(GL_VERSION));
 
   // Use v-sync
   SDL_GL_SetSwapInterval(1);
@@ -103,7 +103,7 @@ void de::core::RenderGL(DE &engine, de::ecs::Scene &scene,
 }
 
 int de::core::CleanGL(DE &engine) {
-  getMultiSinkLogger().info("Cleaning engine");
+  // getMultiSinkLogger().info("Cleaning engine");
 
   SDL_GL_DeleteContext(engine.glContext);
   SDL_DestroyWindow(engine.windowHandler);
