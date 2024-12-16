@@ -2,27 +2,29 @@
 // stb_image in more places easily
 #include "sdl_helpers.h"
 
-void de::logSDL2renderersInfo() {
-  // auto logger = getMultiSinkLogger();
+#include <format>
 
+using namespace de::utils::logger;
+
+void de::logSDL2renderersInfo() {
   auto a = SDL_GetNumRenderDrivers();
-  // logger.info("Number of SDL devices: {}, with info:", a);
+  Logger::info(std::format("Number of SDL devices: {}, with info:", a));
   {
     SDL_RendererInfo temp;
     for (short i = 0; i < a; i++) {
       SDL_GetRenderDriverInfo(i, &temp);
-      // logger.info(
-      //     "name: {}, max texture height: {}, max texture width: {}, num "
-      //     "texture formats: {}",
-      //     temp.name, temp.max_texture_height, temp.max_texture_width,
-      //     temp.num_texture_formats);
+      Logger::info(std::format(
+          "name: {}, max texture height: {}, max texture width: {}, num "
+          "texture formats: {}",
+          temp.name, temp.max_texture_height, temp.max_texture_width,
+          temp.num_texture_formats));
     }
   }
   a = SDL_GetNumVideoDrivers();
-  // logger.info("Number of SDL video drivers: {}, with names:", a);
+  Logger::info(std::format("Number of SDL video drivers: {}, with names:", a));
   {
     for (short i = 0; i < a; i++) {
-      // logger.info("name: {}", SDL_GetVideoDriver(i));
+      Logger::info(std::format("name: {}", SDL_GetVideoDriver(i)));
     }
   }
 }
@@ -62,7 +64,7 @@ SDL_Surface *de::loadImgFromFile2SDLSurface(const char *filename,
     pitch = 4 * width;
   }
 
-  return SDL_CreateRGBSurfaceFrom((void *) data, width, height, depth, pitch,
+  return SDL_CreateRGBSurfaceFrom((void *)data, width, height, depth, pitch,
                                   rmask, gmask, bmask, amask);
 
   // TODO put this somewhere stbi_image_free(data); if needed

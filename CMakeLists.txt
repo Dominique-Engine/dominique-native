@@ -22,7 +22,7 @@ endif ()
 #
 #enable_testing()
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(DOMINIQUE_SOURCES
         "src/dengine/core.cpp"
@@ -30,7 +30,7 @@ set(DOMINIQUE_SOURCES
         "src/dengine/utils/uuid.cpp"
         "src/dengine/openGL/coreGL.cpp"
         "src/dengine/openGL/renderer/renderer.cpp"
-        #        "src/dengine/spdlog_helper.cpp"
+        "src/dengine/spdlog_helper.cpp"
         "src/dengine/sdl_helpers.cpp"
         "3rdParty/cgltf/cgltf.cpp"
         "3rdParty/tinyobjloader/tiny_obj_loader.cc"
@@ -52,12 +52,10 @@ include_directories(${SDL2_INCLUDE_DIRS})
 
 if (${SDL2_FOUND})
     if (WIN32)
-        target_link_libraries(Dominique PRIVATE SDL2::SDL2main SDL2::SDL2-static glad spdlog::spdlog shell32)
-    elseif (UNIX AND NOT APPLE)
-        target_link_libraries(Dominique PRIVATE SDL2 SDL2::SDL2-static glad spdlog::spdlog)
-    elseif (APPLE)
+        target_link_libraries(Dominique PRIVATE SDL2::SDL2main SDL2::SDL2-static glad::glad shell32)
+    elseif (UNIX)
         target_link_libraries(Dominique PRIVATE $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
-                $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> spdlog::spdlog)
+                $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> glad::glad)
     endif ()
 endif ()
 

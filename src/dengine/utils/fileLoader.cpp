@@ -1,15 +1,21 @@
-#include <sstream>
-#include <fstream>
-#include <dengine/spdlog_helper.h>
 #include "fileLoader.h"
+
+#include <dengine/spdlog_helper.h>
+
+#include <format>
+#include <fstream>
+#include <sstream>
+
 #include "cgltf/cgltf.h"
+
+using namespace de::utils::logger;
 
 // Loads file content to a string
 bool de::utils::LoadFileToString(const std::string& path,
                                  std::string& content) {
   std::ifstream file(path.c_str());
   if (!file.is_open()) {
-    // getMultiSinkLogger().error("Could not open file: {}", path);
+    Logger::error(std::format("Could not open file: {}", path));
     return false;
   }
   std::stringstream ss;
@@ -32,7 +38,4 @@ bool de::utils::LoadGLTF(const std::string& path) {
 }
 
 // Loads file content to a string
-bool de::utils::LoadObj(const std::string& path) {
-
-  return true;
-}
+bool de::utils::LoadObj(const std::string& path) { return true; }

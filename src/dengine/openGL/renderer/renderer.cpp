@@ -1,16 +1,21 @@
-#include <glad/glad.h>
-#include <iostream>
-#include <dengine/spdlog_helper.h>
 #include "renderer.h"
+
+#include <dengine/spdlog_helper.h>
+#include <glad/glad.h>
 #include <stb/stb_image.h>
-#include <string>
+
+#include <format>
+#include <iostream>
 #include <map>
+#include <string>
+
+using namespace de::utils::logger;
 
 std::map<de::core::FilterType, int> filterTypeToGLFilter{
     {de::core::FilterType::Lineal, GL_LINEAR},
     {de::core::FilterType::Point, GL_NEAREST}};
 
-void de::core::DrawPrimitive(RenderDataGL &data, RenderTargetGL &target) {
+void de::core::DrawPrimitive(RenderDataGL& data, RenderTargetGL& target) {
   glUseProgram(data.shader.shaderProgram);
   glBindVertexArray(data.vaoID);
 
@@ -38,10 +43,10 @@ void de::core::DrawPrimitive(RenderDataGL &data, RenderTargetGL &target) {
   glBindVertexArray(0);  // Unbind our Vertex Array Object
 }
 
-void de::core::FillGeometryBuffers(std::vector<float> &vertices,
-                                   std::vector<unsigned int> &indices,
-                                   DEuint &vaoID, DEuint &vboID,
-                                   DEuint &eboID) {
+void de::core::FillGeometryBuffers(std::vector<float>& vertices,
+                                   std::vector<unsigned int>& indices,
+                                   DEuint& vaoID, DEuint& vboID,
+                                   DEuint& eboID) {
   glGenVertexArrays(1, &vaoID);  // Create our Vertex Array Object
   glBindVertexArray(vaoID);  // Bind our Vertex Array Object so we can use it
   // Vertex buffer object
@@ -58,24 +63,24 @@ void de::core::FillGeometryBuffers(std::vector<float> &vertices,
 
   // tell OpenGL how it should interpret the vertex data
   // position attribute
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
 
   // color attribute
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                        (void *)(3 * sizeof(float)));
+                        (void*)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
   // texture coord attribute
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                        (void *)(6 * sizeof(float)));
+                        (void*)(6 * sizeof(float)));
   glEnableVertexAttribArray(2);
 
   glBindVertexArray(0);  // Disable our Vertex Buffer Object
 }
 
-void de::core::CreateShader(Shader *shader, const char *vertexShaderSource,
-                            const char *fragmentShaderSource) {
+void de::core::CreateShader(Shader* shader, const char* vertexShaderSource,
+                            const char* fragmentShaderSource) {
   // vertex shader
   shader->vertexShader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(shader->vertexShader, 1, &vertexShaderSource, NULL);
@@ -86,8 +91,8 @@ void de::core::CreateShader(Shader *shader, const char *vertexShaderSource,
   glGetShaderiv(shader->vertexShader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(shader->vertexShader, 512, NULL, infoLog);
-    // getMultiSinkLogger().error("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
-    //                            infoLog);
+    Logger::error(
+        std::format("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}", infoLog));
   }
 
   // fragment shader
@@ -97,8 +102,8 @@ void de::core::CreateShader(Shader *shader, const char *vertexShaderSource,
   glGetShaderiv(shader->fragmentShader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(shader->fragmentShader, 512, NULL, infoLog);
-    // getMultiSinkLogger().error("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED {}",
-    //                            infoLog);
+    Logger::error(
+        std::format("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED {}", infoLog));
   }
 
   // shader program
@@ -109,31 +114,33 @@ void de::core::CreateShader(Shader *shader, const char *vertexShaderSource,
   glGetProgramiv(shader->shaderProgram, GL_LINK_STATUS, &success);
   if (!success) {
     glGetProgramInfoLog(shader->shaderProgram, 512, NULL, infoLog);
-    // getMultiSinkLogger().error("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}",
-    //                            infoLog);
+    Logger::error(
+        std::format("ERROR::SHADER::VERTEX::COMPILATION_FAILED {}", infoLog));
   }
   glDeleteShader(shader->vertexShader);
   glDeleteShader(shader->fragmentShader);
 }
 
-void de::core::SetShaderUniformBool(Shader *shader, const std::string &name,
+void de::core::SetShaderUniformBool(Shader* shader, const std::string& name,
                                     bool value) {
   glUniform1i(glGetUniformLocation(shader->shaderProgram, name.c_str()), value);
 }
-void de::core::SetShaderUniformInt(Shader *shader, const std::string &name,
+
+void de::core::SetShaderUniformInt(Shader* shader, const std::string& name,
                                    int value) {
   glUniform1i(glGetUniformLocation(shader->shaderProgram, name.c_str()), value);
 }
-void de::core::SetShaderUniformFloat(Shader *shader, const std::string &name,
+
+void de::core::SetShaderUniformFloat(Shader* shader, const std::string& name,
                                      float value) {
   glUniform1f(glGetUniformLocation(shader->shaderProgram, name.c_str()), value);
 }
 
-void de::core::LoadTexture(std::string path, DEuint &textureId,
+void de::core::LoadTexture(std::string path, DEuint& textureId,
                            FilterType filterType) {
   int width, height, nrChannels;
   stbi_set_flip_vertically_on_load(true);
-  unsigned char *texdata =
+  unsigned char* texdata =
       stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
   glGenTextures(1, &textureId);
   glBindTexture(GL_TEXTURE_2D, textureId);

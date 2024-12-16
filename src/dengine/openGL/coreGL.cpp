@@ -7,13 +7,18 @@
 
 #include <dengine/spdlog_helper.h>
 #include <dengine/utils/fileLoader.h>
+#include <format>
+#include <iostream>
+#include <string>
+#include <string_view>
 
 using namespace de::components;
+using namespace de::utils::logger;
 
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, DEuint id,
                                 GLenum severity, GLsizei length,
                                 const GLchar *message, const void *userParam) {
-  // auto logger = getMultiSinkLogger();
+  // auto logger = typedef de::utils::logger::Logger;
   // TODO: use a switch to message type, error, warn, info, based on: type ==
   // GL_DEBUG_TYPE_ERROR
   // TODO: log a huan readable version of type and severity
@@ -47,7 +52,7 @@ int de::core::InitGL(DE &engine) {
           SDL_WINDOW_ALLOW_HIGHDPI);
 
   if (engine.windowHandler == NULL) {
-    // logger.error("Couldn't set video mode: {}", SDL_GetError());
+      Logger::error(std::format("Couldn't set video mode: {}", SDL_GetError()));
     return 1;
   }
 
@@ -60,7 +65,7 @@ int de::core::InitGL(DE &engine) {
     return 1;
   }
 
-  // logger.info("OpenGL loaded");
+  Logger::info("OpenGL loaded");
   // logger.info("Vendor:   {}, Renderer: {}, Version:  {}",
   //             glGetString(GL_VENDOR), glGetString(GL_RENDERER),
   //             glGetString(GL_VERSION));
@@ -70,7 +75,7 @@ int de::core::InitGL(DE &engine) {
 
   // Enable debug output
   glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(MessageCallback, 0);
+  // glDebugMessageCallback(MessageCallback, 0);
 
   // Disable depth test and face culling.
   glDisable(GL_DEPTH_TEST);

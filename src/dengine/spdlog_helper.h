@@ -1,32 +1,28 @@
-#if !defined(DE_SPDLOG_HELPER)
-#define DE_SPDLOG_HELPER
+#pragma once
 
+#include <string>
 
-//actually, I do not know if this is working as expected, I want to be something like a singleton but I am using
-//static things for this, and this is used in many different places, like inside lambdas, and not sure about scopes, or anything
-//please future me fix this, and other people please do not use
+namespace de {
+namespace utils {
+namespace logger {
 
-#ifndef SPDLOG_COMPILED_LIB
-#define SPDLOG_COMPILED_LIB 
-// this is here to be able to include this file in other project without needing to link spdlog.lib
-// because for some reason is trying to link double, or use it as header only, so multiple definitions appears
-#endif
+class Logger {
+  static int log_level;
 
-#include <spdlog/spdlog.h>
+  static void setLogLevel(int level);
 
-#ifndef APP_NAME
-#define APP_NAME "no_name_app"
-#endif
+  static void print(const std::string& message, int level);
 
+ public:
+  static void debug(const std::string& message);
 
-//this need to be done better, to improve this attempt of singleton 
-/**
- * @brief Get the Multi Sink Logger object reference. This logs to file and to console.
- * 
- * @return spdlog::logger& reference to singleton Multi Sink Logger
- */
-spdlog::logger& getMultiSinkLogger();
+  static void info(const std::string& message);
 
+  static void warn(const std::string& message);
 
+  static void error(const std::string& message);
+};
 
-#endif // DE_SPDLOG_HELPER
+}  // namespace logger
+}  // namespace utils
+}  // namespace de
