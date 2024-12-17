@@ -7,6 +7,10 @@
       pkgs = import nixpkgs {
         inherit system;
       };
+      buildCmd = pkgs.writeScriptBin "build" ''
+        cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" || exit 1
+        cmake --build build || exit 1
+      '';
     in
     {
       devShells.${system}.default = pkgs.clangStdenv.mkDerivation {
@@ -25,6 +29,7 @@
           cmake
           vcpkg
           pkg-config
+          buildCmd
         ];
 
         VCPKG_ROOT = "${pkgs.vcpkg}/share/vcpkg";
