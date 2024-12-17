@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.5.0)
 
+message("$ENV{VCPKG_ROOT}")
+
+set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+
+message("${CMAKE_TOOLCHAIN_FILE}")
+
 project(Dominique VERSION 0.0.1)
 #set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
