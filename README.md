@@ -32,6 +32,7 @@ cmake --build build
 - Some sort of plug and play
 - All batteries(barebones) included
 - JUST LEARN ALL THE STUFF
+- Make it easy to use
 
 ## Roadman:
 
