@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(Dominique VERSION 0.0.1)
-#set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # set this definitions per terget and not global
 add_definitions(-DAPP_VERSION="${CMAKE_PROJECT_VERSION}")
