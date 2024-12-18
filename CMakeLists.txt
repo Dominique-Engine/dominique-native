@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.5.0)
-
 project(Dominique VERSION 0.0.1)
 #set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -44,7 +43,6 @@ include_directories("3rdParty")
 include_directories("src")
 
 find_package(SDL2 CONFIG REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 
