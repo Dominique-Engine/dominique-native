@@ -1,6 +1,8 @@
 #include "core.h"
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_surface.h>
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -9,6 +11,7 @@
 #include "sdl_helpers.h"
 #include "components/scriptable.hpp"
 #include "components/camera.hpp"
+#include <functional>
 
 using namespace de::utils::logger;
 
@@ -46,7 +49,7 @@ int de::core::Init(DE &engine) {
     else
       SDL_SetWindowIcon(engine.windowHandler, surface);
     // ...and the surface containing the icon pixel data is no longer required.
-    SDL_FreeSurface(surface);
+    SDL_DestroySurface(surface);
   }
 
   return result;
@@ -116,7 +119,7 @@ void de::core::Run(DE &engine, de::ecs::Scene &scene) {
   bool quit = false;
   while (!quit) {
     while (SDL_PollEvent(&event)) {
-      if (event.type == SDL_QUIT) {
+      if (event.type == SDL_EVENT_QUIT) {
         quit = true;
       }
     }

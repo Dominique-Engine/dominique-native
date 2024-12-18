@@ -1,7 +1,7 @@
 // #include "coreGL.h"
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 #include <glad/glad.h>
-#include <SDL2/SDL_opengl.h>
+#include <SDL3/SDL_opengl.h>
 #include <dengine/spdlog_helper.h>
 #include <dengine/utils/fileLoader.h>
 
@@ -26,9 +26,11 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, DEuint id,
 
 int de::core::InitGL(DE& engine) {
   // initialize SDL
-  if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+  if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK |
+                SDL_INIT_HAPTIC | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS |
+                SDL_INIT_SENSOR | SDL_INIT_CAMERA)) {
     Logger::error(std::format("Couldn't initialize SDL: {}", SDL_GetError()));
-    return 1; // sdl could not initialize
+    return 1;  // sdl could not initialize
   }
   // clean up SDL
   atexit(SDL_Quit);
@@ -40,7 +42,8 @@ int de::core::InitGL(DE& engine) {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+  // SDL_GL_CONTEXT_PROFILE_ES);
   // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
@@ -50,10 +53,10 @@ int de::core::InitGL(DE& engine) {
 
   // if succeeded create our window
   engine.windowHandler = SDL_CreateWindow(
-      engine.config.title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-      engine.config.width, engine.config.height,
-      SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
-      SDL_WINDOW_ALLOW_HIGHDPI);
+      engine.config.title, engine.config.width, engine.config.height,
+      SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
+  // WARN: SDL_WINDOWPOS_CENTERED in macos makes windows to try to be
+  // tooltip..ish
 
   if (engine.windowHandler == NULL) {
     Logger::error(std::format("Couldn't set video mode: {}", SDL_GetError()));
@@ -65,13 +68,13 @@ int de::core::InitGL(DE& engine) {
   // if the window creation succeeded create our renderer
   engine.glContext = SDL_GL_CreateContext(engine.windowHandler);
   if (!engine.glContext) {
-    Logger::error(std::format("Failed to initialize OpenGL context: {}",
-                              SDL_GetError()));
+    Logger::error(
+        std::format("Failed to initialize OpenGL context: {}", SDL_GetError()));
     return 1;
   }
 
   // Check OpenGL properties
-  if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
+  if (!gladLoadGLLoader(GLADloadproc(SDL_GL_GetProcAddress))) {
     Logger::error("Failed to initialize OpenGL context");
     return 1;
   }
@@ -86,16 +89,15 @@ int de::core::InitGL(DE& engine) {
 
   Logger::info("OpenGL loaded");
   Logger::info(std::format("Vendor:   {}, Renderer: {}, Version:  {}",
-                           vendorCharPtr, rendererCharPtr,
-                           versionCharPtr));
+                           vendorCharPtr, rendererCharPtr, versionCharPtr));
 
   // Use v-sync
   SDL_GL_SetSwapInterval(1);
 
   auto ver = glGetString(GL_VERSION);
   if (!ver) {
-    std::cerr <<
-        "glGetString(GL_VERSION) returned NULL. Context might be invalid.\n";
+    std::cerr
+        << "glGetString(GL_VERSION) returned NULL. Context might be invalid.\n";
   } else {
     std::cout << "GL_VERSION: " << reinterpret_cast<const char*>(ver) << "\n";
   }
@@ -107,8 +109,8 @@ int de::core::InitGL(DE& engine) {
   GLint numExtensions = 0;
   glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
   for (GLint i = 0; i < numExtensions; ++i) {
-    const char* ext = reinterpret_cast<const char*>(glGetStringi(
-        GL_EXTENSIONS, i));
+    const char* ext =
+        reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
     if (std::strcmp(ext, "GL_KHR_debug") == 0) {
       hasKHRDebug = true;
       break;
@@ -153,9 +155,9 @@ void de::core::RenderGL(DE& engine, de::ecs::Scene& scene,
 }
 
 int de::core::CleanGL(DE& engine) {
-  // getMultiSinkLogger().info("Cleaning engine");
+  Logger::info("Cleaning engine");
 
-  SDL_GL_DeleteContext(engine.glContext);
+  SDL_GL_DestroyContext(engine.glContext);
   SDL_DestroyWindow(engine.windowHandler);
   SDL_Quit();
 
@@ -174,20 +176,20 @@ de::core::SetupRendererGL(DE& engine, de::ecs::Scene& scene) {
       // positions
       // colors
       // texture coords
-      0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-      0.0f, 1.0f, 1.0f, // top right
-      0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
-      0.0f, 1.0f, 0.0f, // bottom right
+      0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+      0.0f,  1.0f,  1.0f,  // top right
+      0.5f,  -0.5f, 0.0f, 0.0f, 1.0f,
+      0.0f,  1.0f,  0.0f,  // bottom right
       -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-      1.0f, 0.0f, 0.0f, // bottom left
-      -0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-      0.0f, 0.0f, 1.0f
+      1.0f,  0.0f,  0.0f,  // bottom left
+      -0.5f, 0.5f,  0.0f, 1.0f, 1.0f,
+      0.0f,  0.0f,  1.0f
       // top left
   };
   std::vector<unsigned int> indices = {
       // note that we start from 0!
       0, 1,
-      2, // first triangle
+      2,  // first triangle
       2, 3,
       0
       // second triangle

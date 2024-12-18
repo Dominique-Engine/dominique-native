@@ -10,14 +10,15 @@ void de::logSDL2renderersInfo() {
   auto a = SDL_GetNumRenderDrivers();
   Logger::info(std::format("Number of SDL devices: {}, with info:", a));
   {
-    SDL_RendererInfo temp;
+    // SDL_RendererInfo temp;
     for (short i = 0; i < a; i++) {
-      SDL_GetRenderDriverInfo(i, &temp);
-      Logger::info(std::format(
-          "name: {}, max texture height: {}, max texture width: {}, num "
-          "texture formats: {}",
-          temp.name, temp.max_texture_height, temp.max_texture_width,
-          temp.num_texture_formats));
+      // SDL_GetRenderDriverInfo(i, &temp);
+      // Logger::info(std::format(
+      //     "name: {}, max texture height: {}, max texture width: {}, num "
+      //     "texture formats: {}",
+      //     temp.name, temp.max_texture_height, temp.max_texture_width,
+      //     temp.num_texture_formats));
+      Logger::info(std::format("name: {}", SDL_GetRenderDriver(i)));
     }
   }
   a = SDL_GetNumVideoDrivers();
@@ -64,8 +65,11 @@ SDL_Surface *de::loadImgFromFile2SDLSurface(const char *filename,
     pitch = 4 * width;
   }
 
-  return SDL_CreateRGBSurfaceFrom((void *)data, width, height, depth, pitch,
-                                  rmask, gmask, bmask, amask);
+  // return SDL_CreateRGBSurfaceFrom((void *)data, width, height, depth, pitch,
+  //                                 rmask, gmask, bmask, amask);
+
+  return SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGB24, data,
+                               width * 3);
 
   // TODO put this somewhere stbi_image_free(data); if needed
 }

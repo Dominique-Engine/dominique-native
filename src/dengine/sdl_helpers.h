@@ -1,7 +1,9 @@
 #if !defined(DE_SDL_HELPER)
 #define DE_SDL_HELPER
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_render.h>
+#include <SDL3/SDL_surface.h>
 #include <stb/stb_image.h>
 
 #include "spdlog_helper.h"

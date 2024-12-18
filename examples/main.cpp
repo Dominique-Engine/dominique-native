@@ -14,27 +14,27 @@
 
 #include "dengine/ecs/ecs.hpp"
 #include "dengine/core.h"
-#include "dengine/sdl_helpers.h"
+// #include "dengine/sdl_helpers.h"
 // #include "dengine/spdlog_helper.h"
 #include "dengine/utils/uuid.h"
 #include "dengine/components/scriptable.hpp"
 #include "dengine/components/camera.hpp"
 #include "dengine/utils/fileLoader.h"
-#include <glm/glm.hpp>
+// #include <glm/glm.hpp>
 
 using namespace std;
 
 int main(void) {
   de::DE App;
 
-  de::logSDL2renderersInfo();
+  // de::logSDL2renderersInfo();
 
   // Scene setup
   de::ecs::Scene scene;
 
   // Testing camera setup
   de::ecs::EntityID camera = scene.NewEntity();
-  scene.Assign<de::components::Camera>(camera);
+  // scene.Assign<de::components::Camera>(camera);
   auto cameraComponent = scene.Get<de::components::Camera>(camera);
 
   // getMultiSinkLogger().info("Loading gltf");

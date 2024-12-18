@@ -1,11 +1,10 @@
 #if !defined(DENGINE_CORE)
 #define DENGINE_CORE
 
-#include <functional>
 #include "ecs/ecs.hpp"
 
 typedef struct SDL_Window SDL_Window;
-typedef void *SDL_GLContext;
+typedef struct SDL_GLContextState *SDL_GLContext;
 
 namespace de {
 enum class RendererType {

@@ -9,6 +9,8 @@ add_executable(DEexample ${GUI_TYPE}
 
 add_dependencies(DEexample Dominique)
 
+find_package(glm CONFIG REQUIRED)
+
 target_link_libraries(DEexample PRIVATE Dominique)
 
 set_target_properties(DEexample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${EXAMPLES_FOLDER})

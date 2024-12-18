@@ -42,19 +42,15 @@ add_library(Dominique STATIC
 include_directories("3rdParty")
 include_directories("src")
 
-find_package(SDL2 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
+find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3)
+include_directories(${SDL3_INCLUDE_DIRS})
 
-include_directories(${SDL2_INCLUDE_DIRS})
-
-if (${SDL2_FOUND})
-    if (WIN32)
-        target_link_libraries(Dominique PRIVATE SDL2::SDL2main SDL2::SDL2-static glad::glad shell32)
-    elseif (UNIX)
-        target_link_libraries(Dominique PRIVATE $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
-                $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static> glad::glad)
-    endif ()
+if (WIN32)
+    target_link_libraries(Dominique PRIVATE SDL2::SDL2main SDL2::SDL2-static glad::glad shell32)
+elseif (UNIX)
+    target_link_libraries(Dominique PRIVATE SDL3::SDL3 glad::glad)
 endif ()
 
 ### Add some usable files to project build folder
