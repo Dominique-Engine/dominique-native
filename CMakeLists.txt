@@ -48,7 +48,7 @@ find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3)
 include_directories(${SDL3_INCLUDE_DIRS})
 
 if (WIN32)
-    target_link_libraries(Dominique PRIVATE SDL2::SDL2main SDL2::SDL2-static glad::glad shell32)
+    target_link_libraries(Dominique PRIVATE SDL3::SDL3 glad::glad shell32)
 elseif (UNIX)
     target_link_libraries(Dominique PRIVATE SDL3::SDL3 glad::glad)
 endif ()

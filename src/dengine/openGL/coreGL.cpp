@@ -121,7 +121,7 @@ int de::core::InitGL(DE& engine) {
     Logger::warn("GL_KHR_debug not supported on this driver");
   } else {
     // Enable debug output
-    glDebugMessageCallback(MessageCallback, nullptr);
+    // glDebugMessageCallback(MessageCallback, nullptr);
   }
 
   // Disable depth test and face culling.
