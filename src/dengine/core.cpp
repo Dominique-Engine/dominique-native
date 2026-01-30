@@ -4,10 +4,11 @@
 #include <SDL3/SDL_surface.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
+#include "sdl_gpu/core.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include "openGL/coreGL.h"
 #include "sdl_helpers.h"
 #include "components/scriptable.hpp"
 #include "components/camera.hpp"
@@ -26,11 +27,8 @@ int de::core::Init(DE &engine) {
   int result;
 
   switch (engine.rendererType) {
-    // case RendererType::DirectX11:
-    //   result = InitDX11(engine);
-    //   break;
-    case RendererType::OpenGl:
-      result = InitGL(engine);
+    case RendererType::SDL_gpu:
+      result = sdl_gpu::Init(engine);
       break;
     default:
       break;
@@ -57,11 +55,8 @@ int de::core::Init(DE &engine) {
 
 int de::core::Clean(DE &engine) {
   switch (engine.rendererType) {
-    // case RendererType::DirectX11:
-    //   return CleanDX11(engine);
-    //   break;
-    case RendererType::OpenGl:
-      return CleanGL(engine);
+    case RendererType::SDL_gpu:
+      return sdl_gpu::Clean(engine);
       break;
     default:
       break;
@@ -87,21 +82,18 @@ void de::core::Render(DE &engine) {
 
 void de::core::Run(DE &engine, de::ecs::Scene &scene) {
   std::function<void(de::DE & engine, de::ecs::Scene & scene,
-                     de::core::RenderTargetGL & target)>
+                     de::core::RenderTarget & target)>
       renderer;
 
   switch (engine.rendererType) {
-    // case RendererType::DirectX11:
-    //   renderer = SetupRendererDX11(engine);
-    //   break;
-    case RendererType::OpenGl:
-      renderer = SetupRendererGL(engine, scene);
+    case RendererType::SDL_gpu:
+      renderer = sdl_gpu::SetupRenderer(engine, scene);
       break;
     default:
       break;
   }
 
-  de::core::RenderTargetGL renderTarget;
+  de::core::RenderTarget renderTarget;
   for (de::ecs::EntityID ent :
        de::ecs::SceneView<de::components::Camera>(scene)) {
     auto camera = scene.Get<de::components::Camera>(ent);

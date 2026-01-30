@@ -27,8 +27,7 @@ set(DOMINIQUE_SOURCES
         "src/dengine/core.cpp"
         "src/dengine/utils/fileLoader.cpp"
         "src/dengine/utils/uuid.cpp"
-        "src/dengine/openGL/coreGL.cpp"
-        "src/dengine/openGL/renderer/renderer.cpp"
+        "src/dengine/sdl_gpu/core.cpp"
         "src/dengine/spdlog_helper.cpp"
         "src/dengine/sdl_helpers.cpp"
         "3rdParty/cgltf/cgltf.cpp"
@@ -43,14 +42,13 @@ include_directories("3rdParty")
 include_directories("src")
 
 find_package(glm CONFIG REQUIRED)
-find_package(glad CONFIG REQUIRED)
 find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3)
 include_directories(${SDL3_INCLUDE_DIRS})
 
 if (WIN32)
-    target_link_libraries(Dominique PRIVATE SDL3::SDL3 glad::glad shell32)
+    target_link_libraries(Dominique PRIVATE SDL3::SDL3 shell32)
 elseif (UNIX)
-    target_link_libraries(Dominique PRIVATE SDL3::SDL3 glad::glad)
+    target_link_libraries(Dominique PRIVATE SDL3::SDL3)
 endif ()
 
 ### Add some usable files to project build folder
