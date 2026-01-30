@@ -8,6 +8,15 @@ add_definitions(-DCOMPILER_SPEC="${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_V
 add_definitions(-DAPP_NAME="${PROJECT_NAME}")
 add_definitions(-DSDL_MAIN_HANDLED)#fix use of SDL, not fully tested on all platforms compilers, just on windows with MSVC and mingw
 
+# SDL3
+# set the output directory for built objects.
+# This makes sure that the dynamic library goes into the build directory automatically.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/glm EXCLUDE_FROM_ALL)
+
+
 set(DENGINE_EXAMPLES on CACHE BOOL "Build examples")
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -41,14 +50,10 @@ add_library(Dominique STATIC
 include_directories("3rdParty")
 include_directories("src")
 
-find_package(glm CONFIG REQUIRED)
-find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3)
-include_directories(${SDL3_INCLUDE_DIRS})
-
 if (WIN32)
-    target_link_libraries(Dominique PRIVATE SDL3::SDL3 shell32)
+    target_link_libraries(Dominique PRIVATE SDL3::SDL3 shell32 glm::glm)
 elseif (UNIX)
-    target_link_libraries(Dominique PRIVATE SDL3::SDL3)
+    target_link_libraries(Dominique PRIVATE SDL3::SDL3 glm::glm)
 endif ()
 
 ### Add some usable files to project build folder

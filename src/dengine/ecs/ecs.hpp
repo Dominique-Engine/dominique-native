@@ -4,7 +4,7 @@
 #include "dengine/utils/uuid.h"
 
 // The next line should be included in some compilation unit of final app
-// If using the dominique engine that is handled on core.cpp compilation, so no
+// If using the dominique engine, that is handled on core.cpp compilation, so no
 // need to include it in any file
 // int s_componentCounterDEngine = 0;
 
@@ -22,6 +22,7 @@ int GetId() {
 
 const int MAX_ENTITIES = 1000;
 const int MAX_COMPONENTS = 32;
+
 // Some typedefs to aid in reading
 typedef unsigned long long EntityIndex;
 
@@ -214,9 +215,10 @@ struct SceneView {
     return Iterator(pScene, firstIndex, componentMask, all);
   }
 
-  const Iterator end() const {
+  const Iterator
+  end() const {
     // Give an iterator to the end of this view
-    int lastIndex = pScene->entities.size();
+    int lastIndex = pScene->entities.size() - 1;
     while (
         lastIndex > 0 &&
         (componentMask != (componentMask & pScene->entities[lastIndex].mask) ||

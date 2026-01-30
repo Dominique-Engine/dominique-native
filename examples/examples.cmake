@@ -9,7 +9,7 @@ add_executable(DEexample ${GUI_TYPE}
 
 add_dependencies(DEexample Dominique)
 
-find_package(glm CONFIG REQUIRED)
+#find_package(glm CONFIG REQUIRED)
 
 target_link_libraries(DEexample PRIVATE Dominique)
 
@@ -27,8 +27,6 @@ set(ExamplesRequiredExtras
 )
 
 get_target_property(EXAMPLES_BINARY_EXECUTABLE_OUTPUT DEexample RUNTIME_OUTPUT_DIRECTORY)
-
-find_package(glm CONFIG REQUIRED)
 
 foreach (_file ${ExamplesRequiredExtras})
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")

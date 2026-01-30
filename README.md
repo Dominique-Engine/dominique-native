@@ -5,10 +5,23 @@ c++ modular framework for creative coding, generative art, and dynamic visual de
 Some things are really basic or plain not ISO compliant, but are just there to get some other things working and are
 waiting for a drop-in replacement.
 
-
 ![Dominique engine latest example](./images/2.png "a title")
 
 ## How to run
+
+Manually install SDL3, then:
+
+```sh
+conan install . --output-folder=build --build=missing
+```
+
+```sh
+conan install . --output-folder=build --build=missing
+```
+
+```sh
+conan install . --output-folder=build --build=missing
+```
 
 ```bash
 cmake -B build -S .
@@ -232,5 +245,6 @@ int main {
 
 - style guide: [google](https://google.github.io/styleguide/cppguide.html)
 - ecs: [this blog](https://www.david-colson.com/2020/02/09/making-a-simple-ecs.html)
-- uuid: [this header](https://www.boost.org/doc/libs/1_81_0/boost/uuid/uuid.hpp), [this blog](https://lowrey.me/guid-generation-in-c-11/),
+-
+uuid: [this header](https://www.boost.org/doc/libs/1_81_0/boost/uuid/uuid.hpp), [this blog](https://lowrey.me/guid-generation-in-c-11/),
 the good old wikipedia
