@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.14)
 project(Dominique VERSION 0.0.1)
 #set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -88,8 +88,15 @@ install(DIRECTORY "./src/" # source directory
         PATTERN "*.h" # select header files
 )
 
+include(CTest)
+
+enable_testing()
 
 if (DENGINE_EXAMPLES)
     # add examples
     include("examples/examples.cmake")
 endif (DENGINE_EXAMPLES)
+
+# Add tests directory
+add_subdirectory(tests)
+

@@ -64,13 +64,13 @@ bool operator==(Uuid const& lhs, Uuid const& rhs) noexcept;
 // TODO
 bool operator<(Uuid const& lhs, Uuid const& rhs) noexcept;
 
-inline bool operator!=(Uuid const& lhs, Uuid const& rhs) noexcept;
+bool operator!=(Uuid const& lhs, Uuid const& rhs) noexcept;
 
-inline bool operator>(Uuid const& lhs, Uuid const& rhs) noexcept;
+bool operator>(Uuid const& lhs, Uuid const& rhs) noexcept;
 
-inline bool operator<=(Uuid const& lhs, Uuid const& rhs) noexcept;
+bool operator<=(Uuid const& lhs, Uuid const& rhs) noexcept;
 
-inline bool operator>=(Uuid const& lhs, Uuid const& rhs) noexcept;
+bool operator>=(Uuid const& lhs, Uuid const& rhs) noexcept;
 
 inline std::size_t hash_value(Uuid const& u) noexcept;
 

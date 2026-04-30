@@ -12,9 +12,8 @@ extern int s_componentCounterDEngine;
 
 namespace de {
 namespace ecs {
-
 // This function will return a unique ID for each component type
-template <class T>
+template<class T>
 int GetId() {
   static int s_componentId = s_componentCounterDEngine++;
   return s_componentId;
@@ -26,14 +25,16 @@ const int MAX_COMPONENTS = 32;
 // Some typedefs to aid in reading
 typedef unsigned long long EntityIndex;
 
+constexpr EntityIndex INVALID_ENTITY =
+    std::numeric_limits<EntityIndex>::max();
+
 struct EntityID {
   EntityIndex index;
-  de::utils::uuids::Uuid uuid;  // needed to correctly delete
+  de::utils::uuids::Uuid uuid; // needed to correctly delete
 };
 
 inline bool IsEntityValid(EntityID id) {
-  // Check if the index is our invalid index
-  return (id.index >> 32) != EntityIndex(-1);
+  return id.index != INVALID_ENTITY;
 }
 
 typedef std::bitset<MAX_COMPONENTS> ComponentMask;
@@ -47,7 +48,7 @@ struct ComponentPool {
   }
 
   // Copy constructor
-  ComponentPool(const ComponentPool& p1) {
+  ComponentPool(const ComponentPool &p1) {
     // We'll allocate enough memory to hold MAX_ENTITIES, each with element size
     elementSize = p1.elementSize;
     pData = new char[elementSize * MAX_ENTITIES];
@@ -58,19 +59,19 @@ struct ComponentPool {
 
   ~ComponentPool() { delete[] pData; }
 
-  inline void* get(size_t index) {
+  inline void *get(size_t index) {
     // looking up the component at the desired index
     return pData + index * elementSize;
   }
 
   // Not sure why this is needed
-  ComponentPool& operator=(const ComponentPool* a) {
+  ComponentPool &operator=(const ComponentPool *a) {
     pData = (*a).pData;
     elementSize = (*a).elementSize;
     return *this;
   }
 
-  char* pData{nullptr};
+  char *pData{nullptr};
   size_t elementSize{0};
 };
 
@@ -81,17 +82,18 @@ struct Scene {
     EntityID id;
     ComponentMask mask;
   };
+
   std::vector<EntityDesc> entities;
   std::vector<EntityIndex> freeEntities;
   std::vector<ComponentPool> componentPools;
 
   // Get a component from an entity
-  template <typename T>
-  T* Get(EntityID id) {
+  template<typename T>
+  T *Get(EntityID id) {
     int componentId = GetId<T>();
     if (!entities[id.index].mask.test(componentId)) return nullptr;
 
-    T* pComponent = static_cast<T*>(componentPools[componentId].get(id.index));
+    T *pComponent = static_cast<T *>(componentPools[componentId].get(id.index));
     return pComponent;
   }
 
@@ -105,41 +107,41 @@ struct Scene {
       return entities[newIndex].id;
     }
     entities.push_back(
-        {{entities.size(), de::utils::uuids::GetUUID()}, ComponentMask()});
+      {{entities.size(), de::utils::uuids::GetUUID()}, ComponentMask()});
     return entities.back().id;
   }
 
   // Destroys an entity
   void DestroyEntity(EntityID id) {
-    EntityID newID = {(EntityIndex)(-1), de::utils::uuids::GetUUID()};
+    EntityID newID = {(EntityIndex) (-1), de::utils::uuids::GetUUID()};
     entities[id.index].id = newID;
     entities[id.index].mask.reset();
     freeEntities.push_back(id.index);
   }
 
   // Assign a component to an entity
-  template <typename T>
-  T* Assign(EntityID id) {
+  template<typename T>
+  T *Assign(EntityID id) {
     int componentId = GetId<T>();
 
-    if (componentPools.size() <= componentId)  // Not enough component pool
+    if (componentPools.size() <= componentId) // Not enough component pool
     {
       componentPools.resize(componentId + 1, ComponentPool(sizeof(T)));
     }
     if (componentPools[componentId].pData ==
-        nullptr)  // New component, make a new pool
+        nullptr) // New component, make a new pool
     {
       componentPools[componentId] = new ComponentPool(sizeof(T));
     }
 
     // Looks up the component in the pool, and initializes it with placement new
-    T* pComponent = new (componentPools[componentId].get(id.index)) T();
+    T *pComponent = new(componentPools[componentId].get(id.index)) T();
 
     entities[id.index].mask.set(componentId);
     return pComponent;
   }
 
-  template <typename T>
+  template<typename T>
   void Remove(EntityID id) {
     // ensures you're not accessing an entity that has been deleted
     if (entities[id.index].id.uuid != id.uuid) return;
@@ -149,9 +151,9 @@ struct Scene {
   }
 };
 
-template <typename... ComponentTypes>
+template<typename... ComponentTypes>
 struct SceneView {
-  SceneView(Scene& scene) : pScene(&scene) {
+  SceneView(Scene &scene) : pScene(&scene) {
     if (sizeof...(ComponentTypes) == 0) {
       all = true;
       return;
@@ -164,20 +166,23 @@ struct SceneView {
   }
 
   struct Iterator {
-    Iterator(Scene* pScene, EntityIndex index, const ComponentMask& mask,
+    Iterator(Scene *pScene,
+             EntityIndex index,
+             const ComponentMask &mask,
              bool all)
-        : pScene(pScene), index(index), mask(mask), all(all) {}
+      : pScene(pScene), index(index), mask(mask), all(all) {
+    }
 
     EntityID operator*() const {
       // give back the entityID we're currently at
       return pScene->entities[index].id;
     }
 
-    bool operator==(const Iterator& other) const {
+    bool operator==(const Iterator &other) const {
       return index == other.index || index == pScene->entities.size();
     }
 
-    bool operator!=(const Iterator& other) const {
+    bool operator!=(const Iterator &other) const {
       return index != other.index && index != pScene->entities.size();
     }
 
@@ -189,7 +194,7 @@ struct SceneView {
           (all || mask == (mask & pScene->entities[index].mask));
     }
 
-    Iterator& operator++() {
+    Iterator &operator++() {
       // Move the iterator forward
       do {
         index++;
@@ -198,7 +203,7 @@ struct SceneView {
     }
 
     EntityIndex index;
-    Scene* pScene;
+    Scene *pScene;
     ComponentMask mask;
     bool all{false};
   };
@@ -207,9 +212,9 @@ struct SceneView {
     // Give an iterator to the beginning of this view
     int firstIndex = 0;
     while (
-        firstIndex < pScene->entities.size() &&
-        (componentMask != (componentMask & pScene->entities[firstIndex].mask) ||
-         !IsEntityValid(pScene->entities[firstIndex].id))) {
+      firstIndex < pScene->entities.size() &&
+      (componentMask != (componentMask & pScene->entities[firstIndex].mask) ||
+       !IsEntityValid(pScene->entities[firstIndex].id))) {
       firstIndex++;
     }
     return Iterator(pScene, firstIndex, componentMask, all);
@@ -220,18 +225,17 @@ struct SceneView {
     // Give an iterator to the end of this view
     int lastIndex = pScene->entities.size() - 1;
     while (
-        lastIndex > 0 &&
-        (componentMask != (componentMask & pScene->entities[lastIndex].mask) ||
-         !IsEntityValid(pScene->entities[lastIndex].id))) {
+      lastIndex > 0 &&
+      (componentMask != (componentMask & pScene->entities[lastIndex].mask) ||
+       !IsEntityValid(pScene->entities[lastIndex].id))) {
       lastIndex--;
     }
     return Iterator(pScene, lastIndex + 1, componentMask, all);
   }
 
-  Scene* pScene{nullptr};
+  Scene *pScene{nullptr};
   ComponentMask componentMask;
   bool all{false};
 };
-
-}  // namespace ecs
-}  // namespace de
+} // namespace ecs
+} // namespace de

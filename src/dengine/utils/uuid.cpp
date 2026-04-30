@@ -36,7 +36,7 @@ constexpr std::size_t de::utils::uuids::Uuid::static_size() noexcept {
 std::string de::utils::uuids::Uuid::to_string() {
   std::stringstream ss;
   for (int i = 0; i < 16; ++i) {
-    ss << std::hex << std::setfill('0') << std::setw(2) << (int)data[i];
+    ss << std::hex << std::setfill('0') << std::setw(2) << (int) data[i];
     if (i == 3 || i == 5 || i == 7 || i == 9) {
       ss << '-';
     }
@@ -47,15 +47,18 @@ std::string de::utils::uuids::Uuid::to_string() {
 de::utils::uuids::Uuid::iterator de::utils::uuids::Uuid::begin() noexcept {
   return data;
 }
+
 de::utils::uuids::Uuid::const_iterator de::utils::uuids::Uuid::begin()
-    const noexcept {
+const noexcept {
   return data;
 }
+
 de::utils::uuids::Uuid::iterator de::utils::uuids::Uuid::end() noexcept {
   return data + size();
 }
+
 de::utils::uuids::Uuid::const_iterator de::utils::uuids::Uuid::end()
-    const noexcept {
+const noexcept {
   return data + size();
 }
 
@@ -64,15 +67,18 @@ constexpr std::size_t de::utils::uuids::Uuid::size() const noexcept {
 }
 
 de::utils::uuids::Uuid::variant_type de::utils::uuids::Uuid::variant()
-    const noexcept {
+const noexcept {
   // variant is stored in octet 7
   // which is index 8, since indexes count backwards
-  unsigned char octet7 = data[8];  // octet 7 is array index 8
-  if ((octet7 & 0x80) == 0x00) {   // 0b0xxxxxxx
+  unsigned char octet7 = data[8]; // octet 7 is array index 8
+  if ((octet7 & 0x80) == 0x00) {
+    // 0b0xxxxxxx
     return variant_ncs;
-  } else if ((octet7 & 0xC0) == 0x80) {  // 0b10xxxxxx
+  } else if ((octet7 & 0xC0) == 0x80) {
+    // 0b10xxxxxx
     return variant_rfc_4122;
-  } else if ((octet7 & 0xE0) == 0xC0) {  // 0b110xxxxx
+  } else if ((octet7 & 0xE0) == 0xC0) {
+    // 0b110xxxxx
     return variant_microsoft;
   } else {
     // assert( (octet7 & 0xE0) == 0xE0 ) // 0b111xxxx
@@ -81,7 +87,7 @@ de::utils::uuids::Uuid::variant_type de::utils::uuids::Uuid::variant()
 }
 
 de::utils::uuids::Uuid::VersionType de::utils::uuids::Uuid::version()
-    const noexcept {
+const noexcept {
   // version is stored in octet 9
   // which is index 6, since indexes count backwards
   uint8_t octet9 = data[6];
@@ -100,27 +106,37 @@ de::utils::uuids::Uuid::VersionType de::utils::uuids::Uuid::version()
   }
 }
 
-inline bool operator!=(de::utils::uuids::Uuid const& lhs,
-                       de::utils::uuids::Uuid const& rhs) noexcept {
+namespace de::utils::uuids {
+
+bool operator==(Uuid const& lhs, Uuid const& rhs) noexcept {
+  return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+bool operator<(Uuid const& lhs, Uuid const& rhs) noexcept {
+  return std::lexicographical_compare(lhs.begin(), lhs.end(),
+                                      rhs.begin(), rhs.end());
+}
+
+bool operator!=(Uuid const& lhs, Uuid const& rhs) noexcept {
   return !(lhs == rhs);
 }
 
-inline bool operator>(de::utils::uuids::Uuid const& lhs,
-                      de::utils::uuids::Uuid const& rhs) noexcept {
+bool operator>(Uuid const& lhs, Uuid const& rhs) noexcept {
   return rhs < lhs;
 }
-inline bool operator<=(de::utils::uuids::Uuid const& lhs,
-                       de::utils::uuids::Uuid const& rhs) noexcept {
+
+bool operator<=(Uuid const& lhs, Uuid const& rhs) noexcept {
   return !(rhs < lhs);
 }
 
-inline bool operator>=(de::utils::uuids::Uuid const& lhs,
-                       de::utils::uuids::Uuid const& rhs) noexcept {
+bool operator>=(Uuid const& lhs, Uuid const& rhs) noexcept {
   return !(lhs < rhs);
 }
 
+} // namespace de::utils::uuids
+
 inline std::size_t de::utils::uuids::hash_value(
-    de::utils::uuids::Uuid const& u) noexcept {
+  de::utils::uuids::Uuid const &u) noexcept {
   std::size_t seed = 0;
   for (Uuid::const_iterator i = u.begin(), e = u.end(); i != e; ++i) {
     seed ^=

@@ -87,3 +87,5 @@ build/
 cmake-build*/
 .idea/
 logs/
+vendored/
+.codex

@@ -7,32 +7,67 @@ waiting for a drop-in replacement.
 
 ![Dominique engine latest example](./images/2.png "a title")
 
-## How to run
+## Build
 
-Manually install SDL3, then:
+### Requirements
 
-```sh
-conan install . --output-folder=build --build=missing
+- Git
+- CMake 3.14+
+- A C++20 compiler
+- System OpenGL development libraries
+- Linux: SDL's normal build dependencies for your windowing backend, such as X11 or Wayland development packages
+
+### Dependencies
+
+The project expects SDL3 and glm to exist under `vendored/`.
+
+```bash
+mkdir -p vendored
+git clone https://github.com/libsdl-org/SDL.git vendored/SDL
+git -C vendored/SDL checkout fb794ac
+git clone https://github.com/g-truc/glm.git vendored/glm
+git -C vendored/glm checkout e7970a8
 ```
 
-```sh
-conan install . --output-folder=build --build=missing
-```
-
-```sh
-conan install . --output-folder=build --build=missing
-```
+### Configure and build
 
 ```bash
 cmake -B build -S .
-```
-
-```bash
 cmake --build build
 ```
 
+Examples are built by default. To skip them:
+
+```bash
+cmake -B build -S . -DDENGINE_EXAMPLES=OFF
+cmake --build build
+```
+
+### Run the example
+
 ```bash
 ./build/examples/DEexample
+```
+
+With a multi-config generator such as Visual Studio, the executable is usually under a configuration subdirectory, for example:
+
+```bash
+./build/examples/Debug/DEexample.exe
+```
+
+### Run tests
+
+```bash
+ctest --test-dir build --output-on-failure
+```
+
+### Nix shell
+
+If you use Nix, enter the development shell and run the bundled build helper:
+
+```bash
+nix develop
+build
 ```
 
 ## Goals
@@ -58,30 +93,12 @@ cmake --build build
 
 ## Stack
 
-- c++ 11
-- SDL2
+- c++ 20
+- SDL3
 - ~~Directx11~~
 - OpenGl 4
-- glad
 - glm
 - cmake
-- spdlog
-
-## Requirements
-
-- Python: for GLAD generation
-- :warning: ~~Vulkan SDK~~: to use vulkan during rendering, if not present need to be disabled in cmake
-- :warning: ~~Directx SDK~~: to use directx during rendering, if not present need to be disabled in cmake(and some kind
-  of disabling for complie sdl without directx support, it appears sdl on windows tries to compile to use directx by
-  default)
-
-## Issues
-
-Because a little hack to allow the use of cmake's `find_package()` and `ExternalProjecAdd()`(the hack is inside
-custom `collector` cmake module) the app should compile easily with clang, gcc or mingw, but with msvc if the SDL2
-package is missing, the first build installs it along other dependencies and the build needs to be triggered a second
-time for the main app to be able to find deps and link correctly, cause the first try fails. If SDL2 is present from the
-beginning nothing happens, but i recommend install it from source(that is handled by the project itself).
 
 ## Modules
 
