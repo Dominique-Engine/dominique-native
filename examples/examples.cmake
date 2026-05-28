@@ -26,15 +26,13 @@ set(ExamplesRequiredExtras
         # "res/models/Prop_Tree_Palm_3.obj"
 )
 
-get_target_property(EXAMPLES_BINARY_EXECUTABLE_OUTPUT DEexample RUNTIME_OUTPUT_DIRECTORY)
-
 foreach (_file ${ExamplesRequiredExtras})
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        list(APPEND extraFiles COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${PROJECT_SOURCE_DIR}/${_file}" "${EXAMPLES_BINARY_EXECUTABLE_OUTPUT}/$<CONFIG>/")
-    else ()
-        list(APPEND extraFiles COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${PROJECT_SOURCE_DIR}/${_file}" "${EXAMPLES_BINARY_EXECUTABLE_OUTPUT}/")
-    endif ()
+    list(APPEND extraFiles COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${PROJECT_SOURCE_DIR}/${_file}" "$<TARGET_FILE_DIR:DEexample>/")
 endforeach ()
+
+if (WIN32)
+    list(APPEND extraFiles COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:SDL3::SDL3>" "$<TARGET_FILE_DIR:DEexample>/")
+endif ()
 
 add_custom_command(TARGET DEexample POST_BUILD
         ${extraFiles}
