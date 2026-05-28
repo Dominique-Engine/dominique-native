@@ -2,6 +2,7 @@
 // stb_image in more places easily
 #include "sdl_helpers.h"
 
+#include <cstring>
 #include <format>
 
 using namespace de::utils::logger;
@@ -33,6 +34,11 @@ void de::logSDL2renderersInfo() {
 // From https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom
 SDL_Surface *de::loadImgFromFile2SDLSurface(const char *filename,
                                             const int req_format) {
+  if (req_format != STBI_rgb && req_format != STBI_rgb_alpha) {
+    Logger::error("Unsupported image format request");
+    return nullptr;
+  }
+
   int width, height, orig_format;
   unsigned char *data =
       stbi_load(filename, &width, &height, &orig_format, req_format);
@@ -40,36 +46,36 @@ SDL_Surface *de::loadImgFromFile2SDLSurface(const char *filename,
     return nullptr;
   }
 
-  // Set up the pixel format color masks for RGB(A) byte arrays.
-  // Only STBI_rgb (3) and STBI_rgb_alpha (4) are supported here!
-  Uint32 rmask, gmask, bmask, amask;
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-  int shift = (req_format == STBI_rgb) ? 8 : 0;
-  rmask = 0xff000000 >> shift;
-  gmask = 0x00ff0000 >> shift;
-  bmask = 0x0000ff00 >> shift;
-  amask = 0x000000ff >> shift;
-#else  // little endian, like x86
-  rmask = 0x000000ff;
-  gmask = 0x0000ff00;
-  bmask = 0x00ff0000;
-  amask = (req_format == STBI_rgb) ? 0 : 0xff000000;
-#endif
+  const int bytes_per_pixel = req_format == STBI_rgb ? 3 : 4;
+  const int src_pitch = bytes_per_pixel * width;
+  const SDL_PixelFormat format =
+      req_format == STBI_rgb ? SDL_PIXELFORMAT_RGB24 : SDL_PIXELFORMAT_RGBA32;
+  SDL_Surface *surface = SDL_CreateSurface(width, height, format);
 
-  int depth, pitch;
-  if (req_format == STBI_rgb) {
-    depth = 24;
-    pitch = 3 * width;  // 3 bytes per pixel * pixels per row
-  } else {              // STBI_rgb_alpha (RGBA)
-    depth = 32;
-    pitch = 4 * width;
+  if (surface == nullptr) {
+    Logger::error("Could not create SDL surface");
+    stbi_image_free(data);
+    return nullptr;
   }
 
-  // return SDL_CreateRGBSurfaceFrom((void *)data, width, height, depth, pitch,
-  //                                 rmask, gmask, bmask, amask);
+  const bool must_lock = SDL_MUSTLOCK(surface);
+  if (must_lock && !SDL_LockSurface(surface)) {
+    Logger::error("Could not lock SDL surface");
+    SDL_DestroySurface(surface);
+    stbi_image_free(data);
+    return nullptr;
+  }
 
-  return SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGB24, data,
-                               width * 3);
+  auto *dst = static_cast<unsigned char *>(surface->pixels);
+  for (int row = 0; row < height; ++row) {
+    std::memcpy(dst + row * surface->pitch, data + row * src_pitch,
+                src_pitch);
+  }
 
-  // TODO put this somewhere stbi_image_free(data); if needed
+  if (must_lock) {
+    SDL_UnlockSurface(surface);
+  }
+
+  stbi_image_free(data);
+  return surface;
 }
