@@ -1,11 +1,33 @@
 # Dominique
 
-c++ modular framework for creative coding, generative art, and dynamic visual development.
+Dominique is a production-capable, modular engine whose architecture is intentionally transparent.
 
-Some things are really basic or plain not ISO compliant, but are just there to get some other things working and are
-waiting for a drop-in replacement.
+It is designed for:
+
+- games
+- creative coding
+- interactive visuals
+- simulations
+- visualization
+- tools
+- rendering research
+
+The engine should be usable, but also teach how modern engines are built.
+
+## Core idea
+
+> Learn modern engine architecture by replacing one subsystem at a time.
 
 ![Dominique engine latest example](./images/2.png "a title")
+
+## Start here
+
+1. `docs/vision.md`
+2. `docs/roadmap.md`
+3. `docs/architecture/principles.md`
+4. `docs/adr/ADR-0001-project-philosophy.md`
+5. `docs/llm/agent-guide.md`
+6. `docs/llm/continuation-prompt.md`
 
 ## Build
 
@@ -106,7 +128,7 @@ build
 
 This module is the core of the engine, it is a very basic abstraction of the window and the renderer.
 
-``` c++
+```c++
 #include "dengine/core.h"
 
 int main() {
@@ -131,7 +153,7 @@ int main() {
 This module needs a lot of study and improvements, is based on some code from boost library, online research and very
 little knoledge of uuid standard. The good news, it seems to work right now at least to get things going.
 
-``` c++
+```c++
 #include "dengine/utils/uuid.h"
 #include "dengine/spdlog_helper.h"
 
@@ -150,7 +172,7 @@ int main {
 
 This module is a very basic entity component system, maybe it is not very performant.
 
-``` c++
+```c++
 #include "dengine/ecs/ecs.hpp"
 
 int main {
@@ -177,12 +199,12 @@ int main {
   t->position = 3.0f;
   logger.info("New TransformComponent position of newEnt: {}",
               scene.Get<TransformComponent>(newEnt)->position);
-  
+
   return 0;
 }
 ```
 
-``` c++
+```c++
 #include "dengine/ecs/ecs.hpp"
 
 int main {
@@ -201,7 +223,7 @@ int main {
 }
 ```
 
-``` c++
+```c++
 #include "dengine/ecs/ecs.hpp"
 
 int main {
@@ -234,7 +256,7 @@ int main {
 
 Holds a function that will be called on each iteration of game loop
 
-``` cpp
+```cpp
 #include "dengine/ecs/ecs.hpp"
 #include "dengine/components/scriptable.hpp"
 
@@ -262,6 +284,5 @@ int main {
 
 - style guide: [google](https://google.github.io/styleguide/cppguide.html)
 - ecs: [this blog](https://www.david-colson.com/2020/02/09/making-a-simple-ecs.html)
--
-uuid: [this header](https://www.boost.org/doc/libs/1_81_0/boost/uuid/uuid.hpp), [this blog](https://lowrey.me/guid-generation-in-c-11/),
-the good old wikipedia
+- uuid: [this header](https://www.boost.org/doc/libs/1_81_0/boost/uuid/uuid.hpp), [this blog](https://lowrey.me/guid-generation-in-c-11/),
+  the good old wikipedia

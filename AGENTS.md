@@ -1,37 +1,43 @@
-# Agent Instructions
+# AGENTS.md
 
-## Build Commands
+Guidance for coding agents working on Dominique Engine.
 
-Very important: when building this project, prefer invoking CMake directly with the locally configured CMake executable and build directory.
+## Project intent
 
-Use this command shape as a direct shell command:
+Dominique is a production-capable modular engine whose architecture is intentionally transparent.
 
-```powershell
-<path-to-cmake-executable> --build <path-to-build-directory> --target <target-name> -j <parallel-job-count>
-```
+Do not optimize only for shipping code. Optimize for understandable architecture.
 
-Choose the placeholders from the current developer environment instead of hardcoding machine-specific paths. For example, use the CMake executable configured by the IDE/toolchain, the active build directory, the target being worked on, and a parallel job count appropriate for the machine.
+## Before coding
 
-When an automated agent runs build or example commands, it should request/run them outside any sandboxed command environment so the command uses the same toolchain, PATH, DLL lookup behavior, and process handling as the developer's manual shell/IDE run.
+Read:
 
-Do not wrap build commands in helper launchers, background process wrappers, or stdout/stderr redirection unless specifically debugging process behavior. Prefer the literal command form above.
+1. `README.md`
+2. `docs/vision.md`
+3. `docs/roadmap.md`
+4. relevant ADRs
+5. relevant module docs
 
-## Commit Message Rules
+## Before committing or opening PRs
 
-- PR title and body must follow the same style as regular commit messages.
-- Do not use Conventional Commits (`feat:`, `fix:`, etc.).
-- Start the subject line with an uppercase letter.
-- Use imperative mood in the subject line, as in Git's own guidance (example: `Add ingreso shared labor fields`).
-- Keep the first line concise and focused on what the commit does, with fewer than 75 characters.
-- For larger or more complex changes, add a commit body:
-- Leave one blank line after the first line.
-- Then explain the changes using Markdown bullet points (`- item`) written in imperative mood.
-- PR title and body should match this same regular commit-message style.
-- Do not add a validation, tests, or checks section to PR bodies. Report validation in the assistant response unless the user explicitly asks for it in the PR body.
-- Unless the user explicitly asks otherwise, open PRs as ready for review, not as drafts.
-- Before creating a PR, re-read this section and state in the working update whether the PR must be ready for review or draft.
-- When using a PR creation tool, explicitly set the draft option to `false` unless the user asked for a draft.
-- After creating or modifying a PR, verify its state with repository tooling and confirm it is not a draft before reporting completion.
-- If a PR is accidentally opened as draft and tooling cannot mark it ready for review, stop and ask the user before closing, recreating, or otherwise changing PR state.
-- AI disclosure in the PR body for every AI-assisted change. Use an `Assisted-by` line in this format:
-    - `Assisted-by: <tool/model>`
+Read `docs/llm/commit-pr-style.md` and follow it for commit messages, PR titles, and PR bodies.
+
+## Rules
+
+- Keep changes small.
+- Update docs with architecture changes.
+- Add examples for new features.
+- Prefer explicit code over clever code.
+- Avoid hidden global state.
+- Respect module boundaries.
+- Do not introduce dependencies without documenting why.
+
+## Summary required after work
+
+Report:
+
+- files changed
+- commands run
+- tests passed/failed
+- design trade-offs
+- open follow-ups
