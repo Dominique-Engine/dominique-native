@@ -159,8 +159,8 @@ struct SceneView {
       return;
     }
     // Unpack the template parameters into an initializer list
-    int componentIds[] = {0, GetId<ComponentTypes>()...};
-    for (int i = 1; i < (sizeof...(ComponentTypes) + 1); i++) {
+    int componentIds[] = {GetId<ComponentTypes>()...};
+    for (int i = 0; i < (sizeof...(ComponentTypes)); i++) {
       componentMask.set(componentIds[i]);
     }
   }
@@ -208,7 +208,7 @@ struct SceneView {
     bool all{false};
   };
 
-  const Iterator begin() const {
+  Iterator begin() const {
     // Give an iterator to the beginning of this view
     int firstIndex = 0;
     while (
@@ -220,7 +220,7 @@ struct SceneView {
     return Iterator(pScene, firstIndex, componentMask, all);
   }
 
-  const Iterator
+  Iterator
   end() const {
     // Give an iterator to the end of this view
     int lastIndex = pScene->entities.size() - 1;
