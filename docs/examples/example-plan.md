@@ -2,6 +2,24 @@
 
 Every feature should have a runnable example.
 
+## Current example
+
+The current repository has one example target, `DEexample`, built from
+`examples/main.cpp`.
+
+It currently demonstrates:
+
+- creating a `de::DE`
+- creating a scene
+- calling the asset loader stubs
+- initializing the engine
+- running the SDL event loop
+- clearing the swapchain through SDL_GPU
+- cleaning up
+
+It does not yet demonstrate mesh rendering, materials, render graphs, GPU
+culling, or bindless resources.
+
 ## Initial examples
 
 1. `01_window`

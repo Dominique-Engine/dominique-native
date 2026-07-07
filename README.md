@@ -36,7 +36,8 @@ The engine should be usable, but also teach how modern engines are built.
 - Git
 - CMake 3.14+
 - A C++20 compiler
-- System OpenGL development libraries
+- SDL3 build dependencies for your platform
+- A graphics driver/backend supported by SDL_GPU
 - Linux: SDL's normal build dependencies for your windowing backend, such as X11 or Wayland development packages
 
 ### Dependencies
@@ -94,7 +95,7 @@ build
 
 ## Goals
 
-- ~~Directx~~ and opengl support
+- SDL_GPU first, with native backend escape hatches later when justified
 - Data oriented design from the ground up
 - Modern c++
 - Multiplatform
@@ -107,7 +108,8 @@ build
 
 - [x] Uuid module
 - [x] Entity component system
-- [ ] 3d ~~directx~~ and opengl performant renderer
+- [ ] SDL_GPU baseline renderer
+- [ ] Modern renderer path with resource handles, visibility buffer, and GPU-driven draw generation
 - [ ] Input abstraction
 - [ ] Inmediate mode gui
 - [ ] 3d physics
@@ -117,8 +119,7 @@ build
 
 - c++ 20
 - SDL3
-- ~~Directx11~~
-- OpenGl 4
+- SDL_GPU
 - glm
 - cmake
 
@@ -133,12 +134,10 @@ This module is the core of the engine, it is a very basic abstraction of the win
 
 int main() {
   de::DE App;
-  App.rendererType = de::RendererType::OpenGl; // Not needed for the moment
+  App.rendererType = de::RendererType::SDL_gpu; // Default renderer today
   App.config.title = "DEngine App";
   App.config.width = 800;
   App.config.height = 600;
-
-  de::logSDL2renderersInfo();
 
   de::core::Init(App);
   de::core::Run(App);

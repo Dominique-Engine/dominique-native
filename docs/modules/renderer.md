@@ -14,6 +14,30 @@ The renderer is not a single monolithic system. It should be a set of cooperatin
 - render passes are scheduled through the render graph
 - backend-specific details stay behind capability checks
 
+## Current implementation status
+
+The current implementation is a clear-pass SDL_GPU baseline, not Renderer v1.
+
+Implemented today:
+
+- SDL initialization
+- window creation
+- SDL_GPU device creation
+- swapchain texture acquisition
+- one clear render pass
+- command buffer submission
+
+Not implemented yet:
+
+- renderer resource handles
+- render graph passes
+- mesh draw submission
+- visibility buffer
+- material shading pass
+- GPU culling
+- indirect draw generation
+- bindless-style material or texture lookup
+
 ## Renderer v1 direction
 
 The proposed v1 direction is:
