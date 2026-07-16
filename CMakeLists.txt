@@ -30,15 +30,15 @@ endif ()
 #
 #enable_testing()
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 set(DOMINIQUE_SOURCES
         "src/dengine/core.cpp"
         "src/dengine/utils/fileLoader.cpp"
         "src/dengine/utils/uuid.cpp"
         "src/dengine/sdl_gpu/core.cpp"
-        "src/logger/spdlog_helper.cpp"
-        "src/dengine/sdl_helpers.cpp"
+        "src/logger/logger.cpp"
+        "src/dengine/sdl/sdl_helpers.cpp"
         "src/third_party/cgltf_impl.cpp"
         "vendored/tinyobjloader/tiny_obj_loader.cc"
 )

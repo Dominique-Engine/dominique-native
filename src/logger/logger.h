@@ -3,7 +3,6 @@
 #include <string>
 
 
-
 namespace de::utils::logger {
 
 class Logger {

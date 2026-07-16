@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "dengine/ecs/ecs.hpp"
+#include "ecs/ecs.hpp"
 #include "test_helpers.hpp"
 
 struct TestRunner {

@@ -12,7 +12,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "dengine/ecs/ecs.hpp"
+#include "ecs/ecs.hpp"
 #include "dengine/core.h"
 // #include "dengine/sdl_helpers.h"
 // #include "dengine/spdlog_helper.h"

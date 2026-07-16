@@ -1,6 +1,6 @@
 #include "fileLoader.h"
 
-#include <logger/spdlog_helper.h>
+#include <logger/logger.h>
 
 #include <format>
 #include <fstream>

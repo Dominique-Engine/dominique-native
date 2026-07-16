@@ -6,10 +6,11 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "sdl_gpu/core.h"
 
+#include <format>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include "sdl_helpers.h"
+#include "sdl/sdl_helpers.h"
 #include "components/scriptable.hpp"
 #include "components/camera.hpp"
 #include <functional>
@@ -24,7 +25,7 @@ int s_componentCounterDEngine = 0;
 // functions are called only couple of times and are not performance sensitive
 // but should be avoided for more frecuent functions
 int de::core::Init(DE &engine) {
-  int result;
+  int result = 0;
 
   switch (engine.rendererType) {
     case RendererType::SDL_gpu:
@@ -36,15 +37,13 @@ int de::core::Init(DE &engine) {
 
   if (result == 0) {
     SDL_Surface *surface = loadImgFromFile2SDLSurface(
-        "icon.png");  // Declare an SDL_Surface to be filled in with pixel data
-                      // from an image file
+      "icon.png"); // Declare an SDL_Surface to be filled in with pixel data
+    // from an image file
 
     // The icon is attached to the window pointer
-    if (surface == nullptr)
-    {
+    if (surface == nullptr) {
       Logger::warn("Could not load windows icon");
-    }
-    else
+    } else
       SDL_SetWindowIcon(engine.windowHandler, surface);
     // ...and the surface containing the icon pixel data is no longer required.
     SDL_DestroySurface(surface);
@@ -59,6 +58,7 @@ int de::core::Clean(DE &engine) {
       return sdl_gpu::Clean(engine);
       break;
     default:
+
       break;
   }
 }
@@ -81,8 +81,9 @@ void de::core::Render(DE &engine) {
 }
 
 void de::core::Run(DE &engine, de::ecs::Scene &scene) {
-  std::function<void(de::DE & engine, de::ecs::Scene & scene,
-                     de::core::RenderTarget & target)>
+  std::function<void(de::DE &engine,
+                     de::ecs::Scene &scene,
+                     de::core::RenderTarget &target)>
       renderer;
 
   switch (engine.rendererType) {
@@ -97,14 +98,22 @@ void de::core::Run(DE &engine, de::ecs::Scene &scene) {
   for (de::ecs::EntityID ent :
        de::ecs::SceneView<de::components::Camera>(scene)) {
     auto camera = scene.Get<de::components::Camera>(ent);
-    renderTarget.model = glm::rotate(renderTarget.model, glm::radians(-55.0f),
+    renderTarget.model = glm::rotate(renderTarget.model,
+                                     glm::radians(-55.0f),
                                      glm::vec3(1.0f, 0.0f, 0.0f));
     int w, h;
-    SDL_GetWindowSize(engine.windowHandler, &w, &h);
+    if (!SDL_GetWindowSize(engine.windowHandler, &w, &h)) {
+      Logger::warn(std::format("Could not get window size: %s", SDL_GetError()));
+      return;
+    }
+
     renderTarget.view =
         glm::translate(renderTarget.view, glm::vec3(0.0f, 0.0f, -3.0f));
     renderTarget.projection = glm::perspective<float>(
-        glm::radians(camera->fov), w / h, camera->near, camera->far);
+      glm::radians(camera->fov),
+      w / h,
+      camera->near,
+      camera->far);
   }
 
   SDL_Event event;

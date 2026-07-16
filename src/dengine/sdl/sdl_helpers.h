@@ -6,15 +6,14 @@
 #include <SDL3/SDL_surface.h>
 #include <stb/stb_image.h>
 
-#include "../logger/spdlog_helper.h"
-namespace de {
+#include "../../logger/logger.h"
 
+namespace de {
 void logSDL2renderersInfo();
 
 // From https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom
-SDL_Surface* loadImgFromFile2SDLSurface(const char* filename,
-                                        const int req_format = STBI_rgb_alpha);
-
-}  // namespace de
+SDL_Surface *loadImgFromFile2SDLSurface(const char *filename,
+                                        int req_format = STBI_rgb_alpha);
+} // namespace de
 
 #endif  // DE_SDL_HELPER

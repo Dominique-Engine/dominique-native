@@ -7,10 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace de {
 
-namespace core {
-
+namespace de::core {
 using namespace de::components;
 
 struct RenderTarget {
@@ -36,8 +34,6 @@ struct RenderData {
 };
 
 namespace sdl_gpu {
-
-
 // OpenGL related
 
 enum class FilterType {
@@ -57,5 +53,4 @@ void Render(DE &engine,
 std::function<void(de::DE &, de::ecs::Scene &, de::core::RenderTarget &)>
 SetupRenderer(DE &engine, de::ecs::Scene &scene);
 } // namespace sdl_gpu
-} // namespace core
-} // namespace de
+} // namespace de::core

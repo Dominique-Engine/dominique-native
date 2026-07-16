@@ -1,13 +1,16 @@
 #include "core.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
-#include <logger/spdlog_helper.h>
+#include <logger/logger.h>
+#include <expected>
 #include <dengine/utils/fileLoader.h>
 
 #include <format>
 #include <iostream>
 #include <string>
 #include <string_view>
+
+#include "dengine/error/error.h"
 
 // #include "renderer/renderer.h"
 
@@ -22,8 +25,6 @@ int de::core::sdl_gpu::Init(DE &engine) {
     Logger::error(std::format("Couldn't initialize SDL: {}", SDL_GetError()));
     return 1;
   }
-  // clean up SDL
-  atexit(SDL_Quit);
 
   // if succeeded create our window
   engine.windowHandler = SDL_CreateWindow(
@@ -34,7 +35,7 @@ int de::core::sdl_gpu::Init(DE &engine) {
   // WARN: SDL_WINDOWPOS_CENTERED in macos makes windows to try to be
   // tooltip..ish
 
-  if (engine.windowHandler == NULL) {
+  if (engine.windowHandler == nullptr) {
     Logger::error(std::format("Couldn't set video mode: {}", SDL_GetError()));
     return 1;
   }
@@ -47,7 +48,7 @@ int de::core::sdl_gpu::Init(DE &engine) {
     false,
     nullptr);
 
-  if (engine.gpuDevice == NULL) {
+  if (engine.gpuDevice == nullptr) {
     Logger::error(std::format("Couldn't create GPU device: {}", SDL_GetError()));
     return 1;
   }
@@ -62,25 +63,27 @@ void de::core::sdl_gpu::Render(DE &engine,
                                const std::vector<de::core::RenderData> &data) {
   // TODO
   SDL_GPUCommandBuffer *cmdbuf = SDL_AcquireGPUCommandBuffer(engine.gpuDevice);
-  if (cmdbuf == NULL) {
-    SDL_Log("AcquireGPUCommandBuffer failed: %s", SDL_GetError());
+  if (cmdbuf == nullptr) {
+    Logger::error(std::format("AcquireGPUCommandBuffer failed: %s", SDL_GetError()));
+    return;
   }
 
   SDL_GPUTexture *swapchainTexture;
-  if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdbuf, engine.windowHandler, &swapchainTexture, NULL, NULL)) {
-    SDL_Log("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError());
+  if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdbuf, engine.windowHandler, &swapchainTexture, nullptr, nullptr)) {
+    Logger::error(std::format("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError()));
+    return;
   }
 
-  if (swapchainTexture != NULL) {
-    SDL_GPUColorTargetInfo colorTargetInfo = {0};
-    colorTargetInfo.texture = swapchainTexture;
-    colorTargetInfo.clear_color = (SDL_FColor){0.3f, 0.4f, 0.5f, 1.0f};
-    colorTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
-    colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
+  if (swapchainTexture == nullptr) return;
 
-    SDL_GPURenderPass *renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorTargetInfo, 1, NULL);
-    SDL_EndGPURenderPass(renderPass);
-  }
+  SDL_GPUColorTargetInfo colorTargetInfo = {0};
+  colorTargetInfo.texture = swapchainTexture;
+  colorTargetInfo.clear_color = (SDL_FColor){0.3f, 0.4f, 0.5f, 1.0f};
+  colorTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
+  colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
+
+  SDL_GPURenderPass *renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorTargetInfo, 1, nullptr);
+  SDL_EndGPURenderPass(renderPass);
 
   SDL_SubmitGPUCommandBuffer(cmdbuf);
 }
@@ -88,7 +91,7 @@ void de::core::sdl_gpu::Render(DE &engine,
 int de::core::sdl_gpu::Clean(DE &engine) {
   Logger::info("Cleaning engine");
 
-  // TODO Destroy
+  SDL_DestroyGPUDevice(engine.gpuDevice);
   SDL_DestroyWindow(engine.windowHandler);
   SDL_Quit();
 
