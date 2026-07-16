@@ -39,7 +39,7 @@ set(DOMINIQUE_SOURCES
         "src/dengine/sdl_gpu/core.cpp"
         "src/logger/spdlog_helper.cpp"
         "src/dengine/sdl_helpers.cpp"
-        "vendored/cgltf/cgltf.cpp"
+        "src/third_party/cgltf_impl.cpp"
         "vendored/tinyobjloader/tiny_obj_loader.cc"
 )
 
