@@ -5,11 +5,10 @@
 #include <cstring>
 #include <format>
 
-using namespace de::utils::logger;
 
 void de::logSDL2renderersInfo() {
   auto a = SDL_GetNumRenderDrivers();
-  Logger::info(std::format("Number of SDL devices: {}, with info:", a));
+  DE_Logger::info(std::format("Number of SDL devices: {}, with info:", a));
   {
     // SDL_RendererInfo temp;
     for (short i = 0; i < a; i++) {
@@ -19,14 +18,14 @@ void de::logSDL2renderersInfo() {
       //     "texture formats: {}",
       //     temp.name, temp.max_texture_height, temp.max_texture_width,
       //     temp.num_texture_formats));
-      Logger::info(std::format("name: {}", SDL_GetRenderDriver(i)));
+      DE_Logger::info(std::format("name: {}", SDL_GetRenderDriver(i)));
     }
   }
   a = SDL_GetNumVideoDrivers();
-  Logger::info(std::format("Number of SDL video drivers: {}, with names:", a));
+  DE_Logger::info(std::format("Number of SDL video drivers: {}, with names:", a));
   {
     for (short i = 0; i < a; i++) {
-      Logger::info(std::format("name: {}", SDL_GetVideoDriver(i)));
+      DE_Logger::info(std::format("name: {}", SDL_GetVideoDriver(i)));
     }
   }
 }
@@ -35,7 +34,7 @@ void de::logSDL2renderersInfo() {
 SDL_Surface *de::loadImgFromFile2SDLSurface(const char *filename,
                                             const int req_format) {
   if (req_format != STBI_rgb && req_format != STBI_rgb_alpha) {
-    Logger::error("Unsupported image format request");
+    DE_Logger::error("Unsupported image format request");
     return nullptr;
   }
 
@@ -53,14 +52,14 @@ SDL_Surface *de::loadImgFromFile2SDLSurface(const char *filename,
   SDL_Surface *surface = SDL_CreateSurface(width, height, format);
 
   if (surface == nullptr) {
-    Logger::error("Could not create SDL surface");
+    DE_Logger::error("Could not create SDL surface");
     stbi_image_free(data);
     return nullptr;
   }
 
   const bool must_lock = SDL_MUSTLOCK(surface);
   if (must_lock && !SDL_LockSurface(surface)) {
-    Logger::error("Could not lock SDL surface");
+    DE_Logger::error("Could not lock SDL surface");
     SDL_DestroySurface(surface);
     stbi_image_free(data);
     return nullptr;

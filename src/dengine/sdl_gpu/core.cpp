@@ -10,19 +10,13 @@
 #include <string>
 #include <string_view>
 
-#include "dengine/error/error.h"
 
-// #include "renderer/renderer.h"
-
-using namespace de::components;
-using namespace de::utils::logger;
-
-int de::core::sdl_gpu::Init(DE &engine) {
+int DE_SdlGpuInit(DE &engine) {
   // initialize SDL
   if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK |
                 SDL_INIT_HAPTIC | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS |
                 SDL_INIT_SENSOR | SDL_INIT_CAMERA)) {
-    Logger::error(std::format("Couldn't initialize SDL: {}", SDL_GetError()));
+    DE_Logger::error(std::format("Couldn't initialize SDL: {}", SDL_GetError()));
     return 1;
   }
 
@@ -36,7 +30,7 @@ int de::core::sdl_gpu::Init(DE &engine) {
   // tooltip..ish
 
   if (engine.windowHandler == nullptr) {
-    Logger::error(std::format("Couldn't set video mode: {}", SDL_GetError()));
+    DE_Logger::error(std::format("Couldn't set video mode: {}", SDL_GetError()));
     return 1;
   }
 
@@ -49,7 +43,7 @@ int de::core::sdl_gpu::Init(DE &engine) {
     nullptr);
 
   if (engine.gpuDevice == nullptr) {
-    Logger::error(std::format("Couldn't create GPU device: {}", SDL_GetError()));
+    DE_Logger::error(std::format("Couldn't create GPU device: {}", SDL_GetError()));
     return 1;
   }
 
@@ -57,20 +51,19 @@ int de::core::sdl_gpu::Init(DE &engine) {
   return 0;
 }
 
-void de::core::sdl_gpu::Render(DE &engine,
-                               de::ecs::Scene &scene,
-                               de::core::RenderTarget &target,
-                               const std::vector<de::core::RenderData> &data) {
+void DE_SdlGpuRender(DE &engine,
+                     DE_Scene &scene,
+                     DE_RenderTarget &target) {
   // TODO
   SDL_GPUCommandBuffer *cmdbuf = SDL_AcquireGPUCommandBuffer(engine.gpuDevice);
   if (cmdbuf == nullptr) {
-    Logger::error(std::format("AcquireGPUCommandBuffer failed: %s", SDL_GetError()));
+    DE_Logger::error(std::format("AcquireGPUCommandBuffer failed: %s", SDL_GetError()));
     return;
   }
 
   SDL_GPUTexture *swapchainTexture;
   if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdbuf, engine.windowHandler, &swapchainTexture, nullptr, nullptr)) {
-    Logger::error(std::format("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError()));
+    DE_Logger::error(std::format("WaitAndAcquireGPUSwapchainTexture failed: %s", SDL_GetError()));
     return;
   }
 
@@ -88,25 +81,12 @@ void de::core::sdl_gpu::Render(DE &engine,
   SDL_SubmitGPUCommandBuffer(cmdbuf);
 }
 
-int de::core::sdl_gpu::Clean(DE &engine) {
-  Logger::info("Cleaning engine");
+int DE_SdlGpuClean(DE &engine) {
+  DE_Logger::info("Cleaning engine");
 
   SDL_DestroyGPUDevice(engine.gpuDevice);
   SDL_DestroyWindow(engine.windowHandler);
   SDL_Quit();
 
   return 0;
-}
-
-std::function<void(de::DE &, de::ecs::Scene &, de::core::RenderTarget &)>
-de::core::sdl_gpu::SetupRenderer(DE &engine, de::ecs::Scene &scene) {
-  // TODO
-  std::vector<RenderData> data;
-
-  auto renderer = [data](de::DE &engine,
-                         de::ecs::Scene &scene,
-                         de::core::RenderTarget &target) {
-    return de::core::sdl_gpu::Render(engine, scene, target, data);
-  };
-  return renderer;
 }

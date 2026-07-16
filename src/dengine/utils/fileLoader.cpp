@@ -8,14 +8,12 @@
 
 #include "cgltf/cgltf.h"
 
-using namespace de::utils::logger;
-
 // Loads file content to a string
 bool de::utils::LoadFileToString(const std::string& path,
                                  std::string& content) {
   std::ifstream file(path.c_str());
   if (!file.is_open()) {
-    Logger::error(std::format("Could not open file: {}", path));
+    DE_Logger::error(std::format("Could not open file: {}", path));
     return false;
   }
   std::stringstream ss;

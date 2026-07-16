@@ -1,10 +1,6 @@
 #pragma once
 
 #include <string>
-#include "types.hpp"
-
-namespace de {
-namespace components {
 
 struct Material {
   std::string Name;
@@ -19,6 +15,3 @@ struct Material {
 struct DiffuseMap {
   DEuint DiffuseMapTO;
 };
-
-}  // namespace components
-}  // namespace de

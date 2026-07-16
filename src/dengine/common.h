@@ -1,7 +1,4 @@
-#if !defined(DENGINE_COMMON)
-#define DENGINE_COMMON
-
-
+#pragma once
 
 #ifdef _WIN32
 #    ifdef DENGINE_EXPORTS
@@ -12,5 +9,3 @@
 #elif
 #    define DENGINE_API
 #endif
-
-#endif // DENGINE_COMMON

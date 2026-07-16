@@ -1,13 +1,9 @@
-#if !defined(DENGINE_GRAPHICS)
-#define DENGINE_GRAPHICS
+#pragma once
 
 #include <glm/glm.hpp>
+#include <glm/glm/vec3.hpp>
 
-namespace de {
-struct vertex {
+
+struct DE_Vertex {
   glm::vec3 pos;
 };
-
-}  // namespace de
-
-#endif  // DENGINE_GRAPHICS
