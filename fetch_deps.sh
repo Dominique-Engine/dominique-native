@@ -24,6 +24,9 @@ clone_or_update() {
 
 clone_or_update https://github.com/libsdl-org/SDL.git vendored/SDL
 clone_or_update https://github.com/g-truc/glm.git vendored/glm
+clone_or_update https://github.com/jkuhlmann/cgltf.git vendored/cgltf
+clone_or_update https://github.com/nothings/stb.git vendored/stb
+clone_or_update https://github.com/tinyobjloader/tinyobjloader.git vendored/tinyobjloader
 
 echo "Done."
 exit 0

@@ -1,7 +1,7 @@
 #include "core.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
-#include <dengine/spdlog_helper.h>
+#include <logger/spdlog_helper.h>
 #include <dengine/utils/fileLoader.h>
 
 #include <format>

@@ -37,17 +37,17 @@ set(DOMINIQUE_SOURCES
         "src/dengine/utils/fileLoader.cpp"
         "src/dengine/utils/uuid.cpp"
         "src/dengine/sdl_gpu/core.cpp"
-        "src/dengine/spdlog_helper.cpp"
+        "src/logger/spdlog_helper.cpp"
         "src/dengine/sdl_helpers.cpp"
-        "3rdParty/cgltf/cgltf.cpp"
-        "3rdParty/tinyobjloader/tiny_obj_loader.cc"
+        "vendored/cgltf/cgltf.cpp"
+        "vendored/tinyobjloader/tiny_obj_loader.cc"
 )
 
 add_library(Dominique STATIC
         ${DOMINIQUE_SOURCES}
 )
 
-include_directories("3rdParty")
+include_directories("vendored")
 include_directories("src")
 
 if (WIN32)
@@ -99,4 +99,3 @@ endif (DENGINE_EXAMPLES)
 
 # Add tests directory
 add_subdirectory(tests)
-

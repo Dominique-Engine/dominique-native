@@ -6,7 +6,7 @@
 #include <SDL3/SDL_surface.h>
 #include <stb/stb_image.h>
 
-#include "spdlog_helper.h"
+#include "../logger/spdlog_helper.h"
 namespace de {
 
 void logSDL2renderersInfo();
