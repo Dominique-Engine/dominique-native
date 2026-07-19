@@ -1,11 +1,9 @@
 #pragma once
 
-#include <string>
-
-#include "dengine/utils/fileLoader.h"
-
-namespace de::utils {
-struct Error {
-  std::string message;
-};
-}
+typedef enum DE_Error {
+  DE_ERR = 1,
+  DE_NOOP,
+  DE_OUT_OF_BONDS,
+  DE_OUT_OF_MEMORY,
+  DE_COMPONENT_LIMIT
+} DE_Result;

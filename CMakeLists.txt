@@ -34,6 +34,8 @@ set(CMAKE_CXX_STANDARD 23)
 
 set(DOMINIQUE_SOURCES
         "src/dengine/core.cpp"
+        "src/dengine/components/registration/registration.cpp"
+        "src/dengine/scene/scene.cpp"
         "src/dengine/utils/fileLoader.cpp"
         "src/dengine/utils/uuid.cpp"
         "src/dengine/sdl_gpu/core.cpp"

@@ -52,8 +52,8 @@ int DE_SdlGpuInit(DE &engine) {
 }
 
 void DE_SdlGpuRender(DE &engine,
-                     DE_Scene &scene,
-                     DE_RenderTarget &target) {
+                     const DE_Scene *scene,
+                     const DE_RenderTarget *target) {
   // TODO
   SDL_GPUCommandBuffer *cmdbuf = SDL_AcquireGPUCommandBuffer(engine.gpuDevice);
   if (cmdbuf == nullptr) {

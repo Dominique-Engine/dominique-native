@@ -2,7 +2,7 @@
 
 #include "types.hpp"
 
-struct Transform {
+struct DE_Transform {
   Vec3 position;
   Vec3 rotation;
   Vec3 scale;

@@ -43,5 +43,5 @@ int DE_SdlGpuInit(DE &engine);
 int DE_SdlGpuClean(DE &engine);
 
 void DE_SdlGpuRender(DE &engine,
-            DE_Scene &scene,
-            DE_RenderTarget &target);
+            const DE_Scene *scene,
+            const DE_RenderTarget *target);

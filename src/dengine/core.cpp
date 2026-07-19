@@ -79,7 +79,7 @@ void DE_Render(DE &engine, DE_Scene &scene) {
   // }
 }
 
-void DE_Run(DE &engine, DE_Scene &scene) {
+void DE_Run(DE &engine, const DE_Scene *scene) {
   DE_RenderTarget renderTarget;
   // for (de::ecs::EntityID ent :
   //      de::ecs::SceneView<de::components::Camera>(scene)) {
@@ -126,7 +126,7 @@ void DE_Run(DE &engine, DE_Scene &scene) {
 
     switch (engine.rendererType) {
       case RendererType::SDL_gpu:
-        DE_SdlGpuRender(engine, scene, renderTarget);
+        DE_SdlGpuRender(engine, scene, &renderTarget);
         break;
       default:
         break;
